@@ -29,7 +29,6 @@ const Sidebar = () => {
               className="w-full h-full object-cover"
             />
           </div>
-          <h1 className="text-lg sm:text-xl font-bold">Ocean Data</h1>
         </div>
 
       </div>

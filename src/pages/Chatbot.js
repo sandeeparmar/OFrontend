@@ -127,7 +127,7 @@ const Chatbot = () => {
             <div className="flex items-center space-x-3 mr-60" >
               
               {/* Logo ocean */}
-              <div className="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden">
+              <div className="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
                 <img 
                   src="https://as1.ftcdn.net/jpg/03/10/42/46/1000_F_310424659_USd3Coot4FUrJivOmDhCA5g0vNk3CVUW.jpg" 
                   alt="ocean_logo" 

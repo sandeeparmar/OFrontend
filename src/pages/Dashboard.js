@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  {React , useState } from 'react';
 import ArgoFloatMap from '../components/Dashboard/ArgoFloatMap';
 import FloatList from '../components/Dashboard/FloatList';
 import DataVisualization from '../components/Dashboard/DataVisualization';
@@ -13,13 +13,10 @@ const Dashboard = () => {
   const [threeDView, setThreeDView] = useState(false);
 
   return (
-    <div className="p-3 xs:p-4 sm:p-5 md:p-6 lg:p-7 xl:p-8 h-full flex flex-col">
-      <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-3 xs:mb-4 sm:mb-5 md:mb-6">
-        ARGO Float Data Dashboard
-      </h1>
+    <div className="p-6 h-full flex flex-col">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">ARGO Float Data Dashboard</h1>
       
-      {/* View Mode Toggle Buttons */}
-      <div className="flex flex-wrap gap-2 xs:gap-3 sm:gap-4 mb-3 xs:mb-4 sm:mb-5 md:mb-6">
+      <div className="flex flex-wrap gap-4 mb-6">
         <button
           onClick={() => setViewMode('map')}
           className={`px-2 py-1.5 xs:px-3 xs:py-2 sm:px-4 sm:py-2 md:px-5 md:py-2.5 
@@ -138,6 +135,8 @@ const Dashboard = () => {
           </p>
         </div>
       )}
+
+
     </div>
   );
 };
