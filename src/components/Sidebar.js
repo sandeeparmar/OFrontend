@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import {  Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
@@ -9,6 +9,7 @@ const Sidebar = () => {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: '📊' },
     { name: 'Chatbot', href: '/chatbot', icon: '🤖' },
+    // { name: 'WorldMap' , href :'/' , icon :''}
   ];
 
   if (user && user.role === 'admin') {
@@ -17,8 +18,20 @@ const Sidebar = () => {
 
   return (
     <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
-      <div className="flex items-center justify-center h-16 px-4 bg-ocean-medium text-white">
-        <h1 className="text-xl font-bold">Ocean Data</h1>
+
+      <div className="flex top-0 items-center justify-center h-[6.5rem] px-7 py-[6.5] bg-[#3f2b96]  shadow-lg border-b-4 border-blue-800 text-black">
+       
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
+            <img 
+              src="https://as1.ftcdn.net/jpg/03/10/42/46/1000_F_310424659_USd3Coot4FUrJivOmDhCA5g0vNk3CVUW.jpg" 
+              alt="Ocean Logo" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <h1 className="text-lg sm:text-xl font-bold">Ocean Data</h1>
+        </div>
+
       </div>
       
       <nav className="mt-8">
