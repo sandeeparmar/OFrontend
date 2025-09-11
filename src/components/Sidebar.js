@@ -19,9 +19,10 @@ const Sidebar = () => {
   return (
     <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
 
-      <div className="flex items-center justify-center h-20 px-4 bg-gradient-to-r from-gray-600 via-blue-100 to-teal-300 shadow-lg border-b-4 border-blue-800 text-white">
+      <div className="flex top-0 items-center justify-center h-[6.5rem] px-7 py-[6.5] bg-gradient-to-r from-gray-400 via-gray-400 to-gray-500 shadow-lg border-b-4 border-blue-800 text-white">
+       
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden">
+          <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
             <img 
               src="https://as1.ftcdn.net/jpg/03/10/42/46/1000_F_310424659_USd3Coot4FUrJivOmDhCA5g0vNk3CVUW.jpg" 
               alt="Ocean Logo" 
@@ -30,6 +31,7 @@ const Sidebar = () => {
           </div>
           <h1 className="text-lg sm:text-xl font-bold">Ocean Data</h1>
         </div>
+
       </div>
       
       <nav className="mt-8">
