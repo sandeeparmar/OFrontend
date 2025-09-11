@@ -28,9 +28,8 @@ const Dashboard = () => {
   ];
 
   useEffect(() => {
-    // Fetch initial map points
     setMapPoints(samplePoints);
-  }, []);
+  }, [] );
 
   const fetchOceanData = async (lat, lng, depth) => {
     setLoading(true);
