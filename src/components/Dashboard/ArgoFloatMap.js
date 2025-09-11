@@ -50,24 +50,5 @@ const ArgoFloatMap = ({ argoFloats, handleFloatSelect }) => {
     </div>
   );
 };
-const styles = `
-  .custom-popup .leaflet-popup-content-wrapper {
-    border-radius: 8px;
-  }
-  .custom-popup .leaflet-popup-content {
-    margin: 0;
-    line-height: 1.4;
-  }
-  @media (max-width: 475px) {
-    .custom-popup .leaflet-popup-content {
-      width: 160px !important;
-    }
-  }
-  @media (min-width: 476px) and (max-width: 767px) {
-    .custom-popup .leaflet-popup-content {
-      width: 200px !important;
-    }
-  }
-`;
 
 export default ArgoFloatMap;
