@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 
 // Mock API services
 const chatApi = {
+
   sendQuery: async (query) => {
+    
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1500));
     
@@ -215,6 +217,8 @@ const Chatbot = () => {
         )}
       </div>
 
+
+
       {/* Message Input */}
       <div className="fixed bottom-0 w-full bg-white p-4 border-t shadow-lg">
         <div className="flex max-w-[60rem]  gap-4 ">
@@ -237,8 +241,6 @@ const Chatbot = () => {
           </button>
         </div>
       </div> 
-
-    
 
     </div>
   );
