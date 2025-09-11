@@ -1,21 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import { oceanDataApi } from '../services/mockApi';
-
-// Fix for default markers in react-leaflet
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
+import React, { useState } from 'react';
+import ArgoFloatMap from '../components/Dashboard/ArgoFloatMap';
+import FloatList from '../components/Dashboard/FloatList';
+import DataVisualization from '../components/Dashboard/DataVisualization';
+import { argoFloats } from '../data/argoFloats';
+import { handleFloatSelect } from '../components/Dashboard/ArgoFloatData';
 
 const Dashboard = () => {
   const [selectedLocation, setSelectedLocation] = useState(null);
-  const [oceanData, setOceanData] = useState(null);
+  const [argoData, setArgoData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [mapPoints, setMapPoints] = useState([]);
 
@@ -78,112 +70,103 @@ const Dashboard = () => {
 
   return (
     <div className="p-6 h-full flex flex-col">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Ocean Data Dashboard</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">ARGO Float Data Dashboard</h1>
       
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Map Section */}
-        <div className="bg-white rounded-lg shadow p-4">
-          <h2 className="text-lg font-semibold mb-4">Ocean Data Locations</h2>
-          <div className="h-96">
-            <MapContainer
-              center={[0, 0]}
-              zoom={2}
-              style={{ height: '100%', width: '100%' }}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              />
-              {mapPoints.map((point, index) => (
-                <Marker
-                  key={index}
-                  position={[point.lat, point.lng]}
-                  eventHandlers={{
-                    click: () => handleMarkerClick(point),
-                  }}
-                >
-                  <Popup>
-                    <div>
-                      <strong>{point.name}</strong>
-                      <br />
-                      Lat: {point.lat}, Lng: {point.lng}
-                      <br />
-                      Depth: {point.depth}m
-                    </div>
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
-          </div>
-        </div>
-
-        {/* Data Visualization Section */}
-        <div className="bg-white rounded-lg shadow p-4 overflow-y-auto">
-          <h2 className="text-lg font-semibold mb-4">
-            {selectedLocation 
-              ? `Data for ${selectedLocation.name}` 
-              : 'Select a location on the map to view data'}
-          </h2>
-          
-          {loading && (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-ocean-medium"></div>
-            </div>
-          )}
-          
-          {!loading && oceanData && (
-            <div className="space-y-6">
-              <div>
-                <h3 className="font-medium mb-2">Temperature vs Depth</h3>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={oceanData.temperature}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="depth" label={{ value: 'Depth (m)', position: 'insideBottom', offset: -5 }} />
-                      <YAxis label={{ value: 'Temperature (°C)', angle: -90, position: 'insideLeft' }} />
-                      <Tooltip />
-                      <Legend />
-                      <Line type="monotone" dataKey="temp" stroke="#3B82F6" name="Temperature" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="font-medium mb-2">Salinity vs Depth</h3>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={oceanData.salinity}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="depth" label={{ value: 'Depth (m)', position: 'insideBottom', offset: -5 }} />
-                      <YAxis label={{ value: 'Salinity (PSU)', angle: -90, position: 'insideLeft' }} />
-                      <Tooltip />
-                      <Legend />
-                      <Line type="monotone" dataKey="salinity" stroke="#10B981" name="Salinity" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="font-medium mb-2">Oxygen vs Depth</h3>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={oceanData.oxygen}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="depth" label={{ value: 'Depth (m)', position: 'insideBottom', offset: -5 }} />
-                      <YAxis label={{ value: 'Oxygen (ml/l)', angle: -90, position: 'insideLeft' }} />
-                      <Tooltip />
-                      <Legend />
-                      <Line type="monotone" dataKey="oxygen" stroke="#EF4444" name="Oxygen" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+      <div className="flex flex-wrap gap-4 mb-6">
+        <button
+          onClick={() => setViewMode('map')}
+          className={`px-4 py-2 rounded-lg ${
+            viewMode === 'map' 
+              ? 'bg-blue-600 text-white' 
+              : 'bg-gray-200 text-gray-700'
+          }`}
+        >
+          Float Locations
+        </button>
+        <button
+          onClick={() => setViewMode('data')}
+          className={`px-4 py-2 rounded-lg ${
+            viewMode === 'data' 
+              ? 'bg-blue-600 text-white' 
+              : 'bg-gray-200 text-gray-700'
+          }`}
+        >
+          Data Visualization
+        </button>
+        {viewMode === 'data' && (
+          <button
+            onClick={() => setThreeDView(!threeDView)}
+            className={`px-4 py-2 rounded-lg ${
+              threeDView
+                ? 'bg-purple-600 text-white' 
+                : 'bg-gray-200 text-gray-700'
+            }`}
+          >
+            {threeDView ? '2D View' : '3D View'}
+          </button>
+        )}
       </div>
+
+      {viewMode === 'map' && (
+        <div className="bg-white rounded-lg shadow p-4 mb-6">
+          <h2 className="text-lg font-semibold mb-4">ARGO Float Locations</h2>
+          <ArgoFloatMap 
+            argoFloats={argoFloats} 
+            handleFloatSelect={(float) => handleFloatSelect(
+              float, 
+              setSelectedLocation, 
+              setArgoData, 
+              setLoading
+            )} 
+          />
+          <FloatList 
+            argoFloats={argoFloats}
+            selectedLocation={selectedLocation}
+            handleFloatSelect={(float) => handleFloatSelect(
+              float, 
+              setSelectedLocation, 
+              setArgoData, 
+              setLoading
+            )}
+          />
+        </div>
+      )}
+
+      {selectedLocation && viewMode === 'data' && (
+        <div className="space-y-6">
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h2 className="text-lg font-semibold mb-2">
+              Data for Float {selectedLocation.platform_number}
+            </h2>
+            <p className="text-sm text-gray-600">
+              Location: {selectedLocation.latitude}°N, {selectedLocation.longitude}°E | 
+              Last Update: {selectedLocation.last_measurement} | 
+              Mode: {selectedLocation.data_mode}
+            </p>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+            </div>
+          ) : argoData.length > 0 ? (
+            <DataVisualization 
+              argoData={argoData} 
+              threeDView={threeDView} 
+            />
+          ) : (
+            <div className="bg-white p-4 rounded-lg shadow text-center">
+              <p className="text-gray-500">No data available for this float</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {!selectedLocation && viewMode === 'data' && (
+        <div className="bg-white rounded-lg shadow p-6 text-center">
+          <p className="text-gray-500">Select an ARGO float from the map view to see its data</p>
+        </div>
+      )}
     </div>
   );
 };
