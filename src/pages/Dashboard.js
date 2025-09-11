@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import ArgoFloatMap from '../components/Dashboard/ArgoFloatMap';
 import FloatList from '../components/Dashboard/FloatList';
 import DataVisualization from '../components/Dashboard/DataVisualization';
 import { argoFloats } from '../data/argoFloats';
 import { handleFloatSelect } from '../components/Dashboard/ArgoFloatData';
+
 
 const Dashboard = () => {
   const [selectedLocation, setSelectedLocation] = useState(null);
