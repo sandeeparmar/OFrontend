@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 const chatApi = {
 
   sendQuery: async (query) => {
-    
+
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1500));
     
@@ -121,7 +121,7 @@ const Chatbot = () => {
     <div className="h-screen flex flex-col">
       
       {/* Chat Header */}
-      <div className="fixed top-0 w-full z-50 bg-gradient-to-r from-gray-600 via-blue-100 to-teal-300 shadow-lg border-b-4 border-blue-800">
+      <div className="fixed top-0 w-full z-50 bg-gradient-to-r from-[#3f2b96] to-[#a8c0ff] shadow-lg border-b-4 border-blue-800">
         <div className="container mx-auto  py-5">
           <div className="flex items-center justify-center">
             <div className="flex items-center space-x-3 mr-60" >
@@ -140,7 +140,7 @@ const Chatbot = () => {
                 <h1 className="text-3xl font-bold text-gray-800 tracking-tight">
                   Ocean Data Assistant
                 </h1>
-                <p className="text-gray-700 text-sm font-medium mt-1">
+                <p className="text-gray-100 text-sm font-medium mt-1">
                   Explore oceanographic insights with AI
                 </p>
               </div>

@@ -19,7 +19,7 @@ const Sidebar = () => {
   return (
     <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
 
-      <div className="flex top-0 items-center justify-center h-[6.5rem] px-7 py-[6.5] bg-gradient-to-r from-gray-400 via-gray-400 to-gray-500 shadow-lg border-b-4 border-blue-800 text-white">
+      <div className="flex top-0 items-center justify-center h-[6.5rem] px-7 py-[6.5] bg-[#3f2b96]  shadow-lg border-b-4 border-blue-800 text-black">
        
         <div className="flex items-center gap-3">
           <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
