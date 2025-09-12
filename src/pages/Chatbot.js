@@ -79,11 +79,13 @@ const Chatbot = () => {
         responseType = 'component';
         componentToRender = '3d_visualization';
         responseText = 'Here is the 3D visualization of the ARGO float data:';
-      } else if (inputMessage.toLowerCase().includes('profile') || inputMessage.toLowerCase().includes('temperature') || inputMessage.toLowerCase().includes('salinity')) {
+      } 
+      else if (inputMessage.toLowerCase().includes('profile') || inputMessage.toLowerCase().includes('temperature') || inputMessage.toLowerCase().includes('salinity')) {
         responseType = 'component';
         componentToRender = 'profile_plots';
         responseText = 'Here are the temperature and salinity profiles:';
-      } else if (inputMessage.toLowerCase().includes('map') || inputMessage.toLowerCase().includes('location') || inputMessage.toLowerCase().includes('float')) {
+      } 
+      else if (inputMessage.toLowerCase().includes('map') || inputMessage.toLowerCase().includes('location') || inputMessage.toLowerCase().includes('float')) {
         responseType = 'component';
         componentToRender = 'float_map';
         responseText = 'Here is the map showing all ARGO float locations:';
@@ -184,26 +186,6 @@ const Chatbot = () => {
           </button>
         </div>
 
-        <div className="mt-2 flex flex-wrap gap-2">
-          <button
-            onClick={() => setInputMessage("Show me the 3D visualization")}
-            className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded hover:bg-gray-300"
-          >
-            3D View
-          </button>
-          <button
-            onClick={() => setInputMessage("Show temperature and salinity profiles")}
-            className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded hover:bg-gray-300"
-          >
-            Profiles
-          </button>
-          <button
-            onClick={() => setInputMessage("Show ARGO float locations on map")}
-            className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded hover:bg-gray-300"
-          >
-            Map
-          </button>
-        </div>
       </div>
     </div>
   );
