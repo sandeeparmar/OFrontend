@@ -1,6 +1,5 @@
 import React from 'react';
 import Plot from 'react-plotly.js';
-
 const ProfilePlots = ({ argoData }) => {
   const depths = argoData.map(d => d.PRES);
   const temps = argoData.map(d => d.TEMP);
