@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Sidebar from './components/Sidebar';
-import Dashboard from './pages/dashboard.js';
+import Dashboard from './pages/Dashboard.js';
 import Chatbot from './pages/Chatbot';
 import AdminPanel from './pages/AdminPanel';
 import Login from './pages/Login';

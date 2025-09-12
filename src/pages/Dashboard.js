@@ -59,7 +59,7 @@ const Dashboard = () => {
         )}
       </div>
 
-      {/* Map View */}
+      Map View
       {viewMode === 'map' && (
         <div className="bg-white rounded-lg shadow p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6 mb-3 xs:mb-4 sm:mb-5 md:mb-6">
           <h2 className="text-base xs:text-lg sm:text-xl md:text-2xl font-semibold mb-2 xs:mb-3 sm:mb-4">

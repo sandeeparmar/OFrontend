@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { generateMockData } from '../../utils/dataHandlers';
 
 // API integration for fetching ARGO data
