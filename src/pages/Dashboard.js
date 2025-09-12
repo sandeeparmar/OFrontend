@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { useState } from "react";
 import ArgoFloatMap from "../components/Dashboard/ArgoFloatMap";
 import FloatList from "../components/Dashboard/FloatList";
 import DataVisualization from "../components/Dashboard/DataVisualization";
@@ -94,12 +94,14 @@ const Dashboard = () => {
         {viewMode === "map" && (
           <section className="bg-white border-b-4 border-gray-100 rounded-xl shadow p-6">
             <h2 className="text-lg font-semibold mb-4">ARGO Float Locations</h2>
+           
             <ArgoFloatMap
               argoFloats={argoFloats}
               handleFloatSelect={(float) =>
                 handleFloatSelect(float, setSelectedLocation, setArgoData, setLoading)
               }
             />
+
             <FloatList
               argoFloats={argoFloats}
               selectedLocation={selectedLocation}
