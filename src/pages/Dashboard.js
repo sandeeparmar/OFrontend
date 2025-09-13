@@ -13,10 +13,29 @@ const Dashboard = () => {
   const [threeDView, setThreeDView] = useState(false);
 
   return (
-    <div className="p-6 h-full flex flex-col">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">ARGO Float Data Dashboard</h1>
+    <div className="h-full  flex flex-col bg-gray-50">
+
+        <div className="fixed top-0 w-full flex  items-center justify-center h-[6.5rem]  py-7 bg-[#3f2b96]  shadow-lg border-b-4 border-blue-800 text-black gap-2 z-50">
+       
+        <div className="flex items-center gap-3 ">
+          <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
+            <img 
+              src="https://as1.ftcdn.net/jpg/03/10/42/46/1000_F_310424659_USd3Coot4FUrJivOmDhCA5g0vNk3CVUW.jpg" 
+              alt="Ocean Logo" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+
+        <div className="p-6 ">
+         <h1 className="text-2xl font-bold text-white ">ARGO Float Data</h1>
+        </div>
+
+      </div>
+       
+
       
-      <div className="flex flex-wrap gap-4 mb-6">
+      <div className="mt-28 flex flex-wrap gap-3 justify-center">
         <button
           onClick={() => setViewMode('map')}
           className={`px-2 py-1.5 xs:px-3 xs:py-2 sm:px-4 sm:py-2 md:px-5 md:py-2.5 
@@ -59,10 +78,10 @@ const Dashboard = () => {
         )}
       </div>
 
-      Map View
+    
       {viewMode === 'map' && (
         <div className="bg-white rounded-lg shadow p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6 mb-3 xs:mb-4 sm:mb-5 md:mb-6">
-          <h2 className="text-base xs:text-lg sm:text-xl md:text-2xl font-semibold mb-2 xs:mb-3 sm:mb-4">
+          <h2 className="text-lg font-semibold  mb-3 text-blue-900">
             ARGO Float Locations
           </h2>
           
@@ -135,29 +154,6 @@ const Dashboard = () => {
           </p>
         </div>
       )}
-
-
-        {/* Map View */}
-        {viewMode === "map" && (
-          <section className="bg-white border-b-4 border-gray-100 rounded-xl shadow p-6">
-            <h2 className="text-lg font-semibold mb-4">ARGO Float Locations</h2>
-           
-            <ArgoFloatMap
-              argoFloats={argoFloats}
-              handleFloatSelect={(float) =>
-                handleFloatSelect(float, setSelectedLocation, setArgoData, setLoading)
-              }
-            />
-
-            <FloatList
-              argoFloats={argoFloats}
-              selectedLocation={selectedLocation}
-              handleFloatSelect={(float) =>
-                handleFloatSelect(float, setSelectedLocation, setArgoData, setLoading)
-              }
-            />
-          </section>
-        )}
 
         {/* Data View */}
         {viewMode === "data" && (
