@@ -1,21 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ThreeDVisualization from '../components/Dashboard/ThreeDVisualization.js';
-import { TemperatureProfile, SalinityProfile } from '../components/Dashboard/ProfilePlots.js';
-import { Send, Bot, User, MapPin, BarChart3, Globe, Waves, MessageCircle, Sparkles, Activity, Navigation, Thermometer } from 'lucide-react';
+import { Send, Bot, User, MapPin, BarChart3, Globe, Sparkles ,Thermometer } from 'lucide-react';
 import { argoFloats } from '../data/argoFloats.js';
 import { generateMockData } from '../utils/dataHandlers.js';
 import  ThreeDVisualization from '../components/Dashboard/ThreeDVisualization.js';
 import ProfilePlots from '../components/Dashboard/ProfilePlots.js';
 import ArgoFloatMap from '../components/Dashboard/ArgoFloatMap.js';
 import FloatList from '../components/Dashboard/FloatList.js';
-import { argoFloats } from '../data/argoFloats.js';
-import { generateMockData } from '../utils/dataHandlers.js';
+
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [currentData, setCurrentData] = useState(null);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
 
@@ -29,7 +25,7 @@ const Chatbot = () => {
 
   // Smooth scroll to bottom
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({
+    messagesEndRef.current?.scrollIntoView({ 
       behavior: 'smooth',
       block: 'nearest'
     });
@@ -52,48 +48,18 @@ const Chatbot = () => {
 
   // Component rendering logic
   const renderComponent = (queryType, data = null) => {
-    const displayData = data || generateMockData();
-    
     switch(queryType) {
       case '3d_visualization':
-        return (
-          <>
-            <DataInfoTable argoData={displayData} />
-            <ThreeDVisualization argoData={displayData} />
-          </>
-        );
-      case 'temperature_profile':
-        return (
-          <>
-            <DataInfoTable argoData={displayData} />
-            <TemperatureProfile argoData={displayData} />
-          </>
-        );
-      case 'salinity_profile':
-        return (
-          <>
-            <DataInfoTable argoData={displayData} />
-            <SalinityProfile argoData={displayData} />
-          </>
-        );
+        return <ThreeDVisualization argoData={data || generateMockData()} />;
+      case 'profile_plots':
+        return <ProfilePlots argoData={data || generateMockData()} />;
       case 'float_map':
         return (
-          <div>
-            <ArgoFloatMap 
-              argoFloats={argoFloats} 
-              handleFloatSelect={() => {}}
-            />
-            <div className="mt-4">
-              <FloatList 
-                argoFloats={argoFloats}
-                selectedLocation={null}
-                handleFloatSelect={() => {}}
-              />
-            </div>
+          <div className="space-y-4">
+            <ArgoFloatMap argoFloats={argoFloats} />
+            <FloatList argoFloats={argoFloats} />
           </div>
         );
-      case 'data_info':
-        return <DataInfoTable argoData={displayData} />;
       default:
         return null;
     }
@@ -113,33 +79,38 @@ const Chatbot = () => {
     setInputMessage('');
     setIsLoading(true);
 
-    // Generate mock data for this query
-    const queryData = generateMockData();
-    setCurrentData(queryData);
-
     // Simulate API delay with more realistic timing
     setTimeout(() => {
       let responseType = 'text';
       let componentToRender = null;
       let responseText = '';
 
-      // Simple query detection - in real app, use NLP or more sophisticated detection
-      if (inputMessage.toLowerCase().includes('3d') || inputMessage.toLowerCase().includes('three') || inputMessage.toLowerCase().includes('visualization')) {
+      // Enhanced query detection with more keywords
+      const message = messageText.toLowerCase();
+      
+      if (message.includes('3d') || message.includes('three') || message.includes('visualization') || message.includes('globe')) {
         responseType = 'component';
         componentToRender = '3d_visualization';
-        responseText = 'Here is the 3D visualization of the ARGO float data:';
+        responseText = '🌐 Here\'s the interactive 3D visualization of ARGO float data. You can explore the temperature and salinity distributions across different depths:';
       } 
-      else if (inputMessage.toLowerCase().includes('profile') || inputMessage.toLowerCase().includes('temperature') || inputMessage.toLowerCase().includes('salinity')) {
+      else if (message.includes('profile') || message.includes('temperature') || message.includes('salinity') || message.includes('depth')) {
         responseType = 'component';
         componentToRender = 'profile_plots';
-        responseText = 'Here are the temperature and salinity profiles:';
+        responseText = '📊 Here are the temperature and salinity profiles from the selected ARGO float. These show how oceanographic parameters change with depth:';
       } 
-      else if (inputMessage.toLowerCase().includes('map') || inputMessage.toLowerCase().includes('location') || inputMessage.toLowerCase().includes('float')) {
+      else if (message.includes('map') || message.includes('location') || message.includes('float') || message.includes('position')) {
         responseType = 'component';
         componentToRender = 'float_map';
-        responseText = 'Here is the map showing all ARGO float locations:';
-      } else {
-        responseText = 'I can help you visualize ARGO float data. Try asking about 3D visualizations, temperature/salinity profiles, or float locations on the map.';
+        responseText = '🗺️ Here\'s the interactive map showing all active ARGO float locations in the Indian Ocean region:';
+      }
+      else if (message.includes('summary') || message.includes('data') || message.includes('overview')) {
+        responseText = '📈 **Data Summary**\n\nCurrently tracking **3 active ARGO floats** in the Indian Ocean:\n• Total profiles collected: 448\n• Latest measurements: April 2022\n• Geographic coverage: 85°E - 86°E, 5°S - 4°S\n• Parameters measured: Temperature, Salinity, Pressure\n\nWould you like to explore any specific visualization?';
+      }
+      else if (message.includes('help') || message.includes('what') || message.includes('how')) {
+        responseText = '🤖 **I can help you with:**\n\n🌐 **3D Visualizations** - Interactive 3D plots of ocean data\n📊 **Profile Plots** - Temperature and salinity vs depth charts\n🗺️ **Float Maps** - Geographic locations of ARGO floats\n📈 **Data Analysis** - Summaries and statistics\n\n**Try asking:**\n• "Show me a 3D visualization"\n• "What are the temperature profiles?"\n• "Where are the floats located?"\n• "Give me a data summary"';
+      }
+      else {
+        responseText = '🌊 I\'d be happy to help you explore ARGO float data! \n\nTry asking about:\n• **3D visualizations** of ocean data\n• **Temperature and salinity profiles**\n• **Float locations** on the map\n• **Data summaries** and analysis\n\nWhat interests you most?';
       }
 
       const botMessage = {
@@ -189,7 +160,7 @@ const Chatbot = () => {
       {/* Quick Actions - Show when no messages or few messages */}
       {messages.length <= 1 && (
         <div className="px-6 py-4 bg-white border-b border-gray-100">
-          <p className="text-sm text-gray-600 mb-3">Top Search:</p>
+          <p className="text-sm text-gray-600 mb-3">Top :</p>
           <div className="flex flex-wrap gap-2">
             {quickActions.map((action, idx) => (
               <button
@@ -208,7 +179,7 @@ const Chatbot = () => {
 
       {/* Messages Container */}
       <div className="flex-1 overflow-hidden">
-        <div
+        <div 
           ref={chatContainerRef}
           className="h-full overflow-y-auto px-6 py-4 space-y-6"
         >
@@ -217,18 +188,38 @@ const Chatbot = () => {
               key={message.id}
               className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}
             >
-              <div
-                className={`max-w-3xl rounded-lg p-4 ${
-                  message.type === 'user'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-800'
-                }`}
-              >
-                <p className="whitespace-pre-wrap">{message.content}</p>
+              <div className="flex items-start space-x-3 max-w-4xl">
+                {message.type === 'bot' && (
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <Bot className="w-5 h-5 text-white" />
+                  </div>
+                )}
                 
-                {message.responseType === 'component' && message.component && (
-                  <div className="mt-4 p-3 bg-white rounded-lg shadow-md">
-                    {renderComponent(message.component)}
+                <div
+                  className={`rounded-2xl px-4 py-3 max-w-none ${
+                    message.type === 'user'
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg'
+                      : 'bg-white text-gray-800 shadow-md border border-gray-100'
+                  }`}
+                >
+                  <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                    {message.content}
+                  </div>
+                  
+                  {message.responseType === 'component' && message.component && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200 shadow-sm">
+                      {renderComponent(message.component)}
+                    </div>
+                  )}
+
+                  <div className={`text-xs mt-2 ${message.type === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
+                    {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+
+                {message.type === 'user' && (
+                  <div className="w-8 h-8 bg-gradient-to-r from-gray-600 to-gray-700 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <User className="w-5 h-5 text-white" />
                   </div>
                 )}
               </div>
@@ -296,7 +287,6 @@ const Chatbot = () => {
           </div>
         </div>
 
-        
       </div>
     </div>
   );
