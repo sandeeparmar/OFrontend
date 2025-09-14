@@ -15,7 +15,7 @@ const Dashboard = () => {
   return (
     <div className="h-full  flex flex-col bg-gray-50">
 
-        <div className="fixed top-0 w-full flex  items-center justify-center h-[6.5rem]  py-7 bg-[#3f2b96]  shadow-lg border-b-4 border-blue-800 text-black gap-2 z-50">
+        <div className="fixed top-0 w-full flex  items-center justify-center h-[6.5rem]  py-7 bg-[#3f2b96]  shadow-lg border-b-4 border-blue-800 text-black gap-2 z-50 ">
        
         <div className="flex items-center gap-3 ">
           <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
@@ -35,7 +35,7 @@ const Dashboard = () => {
        
 
       
-      <div className="mt-28 flex flex-wrap gap-3 justify-center">
+      <div className="mt-28 flex  gap-3 right-0 px-5">
         <button
           onClick={() => setViewMode('map')}
           className={`px-2 py-1.5 xs:px-3 xs:py-2 sm:px-4 sm:py-2 md:px-5 md:py-2.5 
@@ -112,10 +112,10 @@ const Dashboard = () => {
 
       {/* Data Visualization View */}
       {selectedLocation && viewMode === 'data' && (
-        <div className="space-y-3 xs:space-y-4 sm:space-y-5 md:space-y-6">
-          <div className="bg-white p-2 xs:p-3 sm:p-4 md:p-5 rounded-lg shadow">
+        <div className="space-y-3 mt-4 mx-2  xs:space-y-4 sm:space-y-5 md:space-y-6">
+          <div className="bg-white border-2 border-green-400  p-2 xs:p-3 sm:p-4 md:p-5 rounded-lg shadow">
             <h2 className="text-base xs:text-lg sm:text-xl md:text-2xl font-semibold mb-1 xs:mb-2">
-              Float {selectedLocation.platform_number}
+              Float  Point {selectedLocation.platform_number}
             </h2>
             <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-1 xs:gap-2 text-xs xs:text-sm sm:text-base text-gray-600">
               <p>📍 {selectedLocation.latitude}°N, {selectedLocation.longitude}°E</p>
@@ -156,7 +156,7 @@ const Dashboard = () => {
       )}
 
         {/* Data View */}
-        {viewMode === "data" && (
+        {/* {viewMode === "data" && (
           <>
             {selectedLocation ? (
               <section className="space-y-6">
@@ -193,7 +193,7 @@ const Dashboard = () => {
             )}
           </>
         )}
-      
+       */}
     
 
     </div>

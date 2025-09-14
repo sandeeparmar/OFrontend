@@ -7,6 +7,7 @@ import Chatbot from './pages/Chatbot';
 import AdminPanel from './pages/AdminPanel';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import OceanTemperatureVisualization from './pages/testingPage.js'
 import './App.css';
 
 function AppContent() {
@@ -49,6 +50,10 @@ function AppContent() {
           <Route 
             path="/signup" 
             element={!user ? <Signup /> : <Navigate to="/dashboard" />} 
+          />
+          <Route 
+            path="/testing" 
+            element={!user ? <OceanTemperatureVisualization /> : <Navigate to="/dashboard" />} 
           />
         </Routes>
       </div>

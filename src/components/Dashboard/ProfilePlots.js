@@ -7,8 +7,8 @@ export const TemperatureProfile = ({ argoData }) => {
   const temps = argoData.map(d => d.TEMP);
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow mb-4">
-      <h3 className="text-lg font-semibold mb-4">Temperature Profile</h3>
+    <div className="bg-gray-100 border-b-3 p-4 rounded-lg shadow mb-4">
+      <h3 className="text-lg text-blue-600 font-semibold mb-4">Temperature Profile</h3>
       <Plot
         data={[
           {
@@ -37,8 +37,8 @@ export const SalinityProfile = ({ argoData }) => {
   const salinityDepths = argoData.filter(d => d.PSAL !== null).map(d => d.PRES);
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow">
-      <h3 className="text-lg font-semibold mb-4">Salinity Profile</h3>
+    <div className="bg-gray-100 border-b-200 p-4 rounded-lg shadow">
+      <h3 className="text-lg text-blue-600 font-semibold mb-4">Salinity Profile</h3>
       <Plot
         data={[
           {
@@ -64,7 +64,7 @@ export const SalinityProfile = ({ argoData }) => {
 // Updated ProfilePlots component that uses the separated components
 const ProfilePlots = ({ argoData }) => {
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <div className="grid grid-cols-1 gap-4 ">
       <TemperatureProfile argoData={argoData} />
       <SalinityProfile argoData={argoData} />
     </div>
