@@ -214,7 +214,7 @@ const Chatbot = () => {
                 )}
                 
                 <div
-                  className={`rounded-2xl px-4 py-3 max-w-none ${
+                  className={`rounded-2xl px-4 py-1 max-w-none ${
                     message.type === 'user'
                       ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg'
                       : 'bg-white text-gray-800 shadow-md border border-gray-100'
@@ -230,9 +230,7 @@ const Chatbot = () => {
                     </div>
                   )}
 
-                  <div className={`text-xs mt-2 ${message.type === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
-                    {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </div>
+                 
                 </div>
 
                 {message.type === 'user' && (
