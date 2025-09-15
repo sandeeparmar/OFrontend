@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create an Axios instance
 const axiosClient = axios.create({
-  baseURL: "http://locahost:4000", 
+  baseURL: process.env.AXIOS_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },

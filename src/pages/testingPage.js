@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Globe, Thermometer, Waves, Info, Play, Pause, Settings, Eye, Zap, Target } from 'lucide-react';
+import {  Thermometer, Waves , Play, Pause, Settings, Eye, Zap, Target  , ChevronDown, ChevronUp  } from 'lucide-react';
 
 const OceanTemperatureVisualization = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showGuide , setShowGuide] = useState(false) ;
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [animationSpeed, setAnimationSpeed] = useState(50);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -308,9 +309,21 @@ const OceanTemperatureVisualization = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 flex items-center justify-center">
         <div className="text-center text-white">
-          <Waves className="w-16 h-16 mx-auto mb-6 animate-bounce" style={{color: '#536976'}} />
+          
+           <div className="h-12 bg-gray-200 border-1 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg  cursor-pointer">
+            <img 
+              src="https://as1.ftcdn.net/jpg/03/10/42/46/1000_F_310424659_USd3Coot4FUrJivOmDhCA5g0vNk3CVUW.jpg" 
+              alt="Ocean Logo" 
+              className="w-30% h-full object-cover border-1 rounded-full"
+            />
+            <h2 className='w-70% text-black'>
+              Ocean Data Visualisation
+            </h2>
+          </div>
+
+
           <div className="text-2xl font-bold mb-4" style={{color: '#536976'}}>Loading Ocean Data...</div>
-          <div className="text-gray-300">Preparing interactive visualization</div>
+          <div className="text-white">Preparing interactive visualization</div>
           <div className="mt-4 w-48 bg-gray-700 rounded-full h-2 mx-auto">
             <div 
               className="h-2 rounded-full animate-pulse transition-all duration-1000" 
@@ -323,14 +336,21 @@ const OceanTemperatureVisualization = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 text-white overflow-hidden">
-      {/* Modern Header */}
+    <div className=" bg-[#BBD2C5] text-white ">
+     
+     
       <div className="relative z-10 p-6 bg-black bg-opacity-60 backdrop-blur-md">
-        <div className="flex items-center justify-between">
+       
+          {/* Modern Header */}
+        <div className="flex items-center mb-4 justify-between">
           <div className="flex items-center space-x-4">
-            <div className="p-2 rounded-full" style={{backgroundColor: '#536976'}}>
-              <Globe className="w-8 h-8 text-white" />
-            </div>
+            <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
+            <img 
+              src="https://as1.ftcdn.net/jpg/03/10/42/46/1000_F_310424659_USd3Coot4FUrJivOmDhCA5g0vNk3CVUW.jpg" 
+              alt="Ocean Logo" 
+              className="w-full h-full object-cover"
+            />
+          </div>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                 Ocean Explorer
@@ -338,7 +358,9 @@ const OceanTemperatureVisualization = () => {
               <p className="text-gray-300 text-sm">Interactive Temperature & Depth Visualization</p>
             </div>
           </div>
-          
+        </div>
+
+        <div className='mt-5 py-4 px-4 gap-4 border-2  rounded-full bg-[#12c2e9]'>
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setShowControls(!showControls)}
@@ -363,8 +385,9 @@ const OceanTemperatureVisualization = () => {
               className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-all duration-300 hover:scale-105"
             >
               Refresh
-            </button>
+            </button> 
           </div>
+
         </div>
 
         {/* Advanced Controls Panel */}
@@ -458,17 +481,19 @@ const OceanTemperatureVisualization = () => {
             </div>
           </div>
         )}
+
       </div>
 
       {/* Main Visualization */}
-      <div className="relative flex-1">
+      <div className="relative flex-1 mt-4 ">
+        
         <canvas
           ref={canvasRef}
           width={window.innerWidth || 1200}
-          height={(window.innerHeight || 800) - (showControls ? 300 : 200)}
+          height={(window.innerHeight || 1200) - (showControls ? 300 : 200)}
           onClick={handleCanvasClick}
           onMouseMove={handleCanvasMouseMove}
-          className="w-full cursor-crosshair"
+          className="w-full cursor-pointer "
           style={{ imageRendering: 'auto' }}
         />
 
@@ -524,35 +549,9 @@ const OceanTemperatureVisualization = () => {
           </div>
         )}
 
-        {/* Interactive Tutorial */}
-        {!selectedPoint && (
-          <div className="absolute top-4 left-4 bg-black bg-opacity-80 backdrop-blur-sm p-4 rounded-lg border" style={{borderColor: '#536976'}}>
-            <div className="flex items-center space-x-2 mb-2">
-              <Zap className="w-5 h-5" style={{color: '#536976'}} />
-              <span className="font-semibold">Interactive Guide</span>
-            </div>
-            <div className="space-y-2 text-sm text-gray-300">
-              <div>🖱️ Click any point to explore data</div>
-              <div>🎛️ Use controls to change view modes</div>
-              <div>🎬 Toggle animation for live effect</div>
-              <div>🌡️ Adjust temperature filters</div>
-            </div>
-          </div>
-        )}
-
-        {/* Status Messages */}
-        {error && (
-          <div className="absolute bottom-4 left-4 bg-red-900 bg-opacity-90 backdrop-blur-sm p-4 rounded-lg border border-red-500 max-w-md">
-            <div className="flex items-center space-x-2 mb-2">
-              <Info className="w-5 h-5 text-red-400" />
-              <span className="font-semibold">Demo Mode</span>
-            </div>
-            <div className="text-sm text-gray-300">
-              Using simulated data for demonstration. The visualization shows realistic ocean temperature and depth patterns.
-            </div>
-          </div>
-        )}
       </div>
+
+
     </div>
   );
 };
