@@ -33,7 +33,6 @@ const Chatbot = () => {
     }
   }; 
 
-
   // Quick action buttons
   const quickActions = [
     { label: '3D Visualization', icon: Globe, query: 'Show me a 3D visualization of the data' },
@@ -110,20 +109,20 @@ const Chatbot = () => {
       if (message.includes('3d') || message.includes('three') || message.includes('visualization') || message.includes('globe')) {
         responseType = 'component';
         componentToRender = '3d_visualization';
-        responseText = '🌐 Here\'s the interactive 3D visualization of ARGO float data. You can explore the temperature and salinity distributions across different depths:';
+        responseText = '🌐 This interactive 3D visualization presents data collected from ARGO floats, allowing you to explore the ocean in a highly engaging way. The visualization highlights how temperature and salinity vary across different depths of the ocean, giving a layered view of the underwater environment. By navigating through the model, you can observe patterns such as warmer surface waters gradually cooling with depth, or areas where salinity concentrations shift due to factors like evaporation, rainfall, or currents. This helps in understanding key oceanographic processes, including heat transfer, water density variations, and the circulation of ocean currents that influence global climate. The tool not only makes complex scientific data more accessible but also provides valuable insights for researchers, students, and anyone curious about how our oceans function beneath the surface.';
       } 
       else if (message.includes('profile') || message.includes('temperature') || message.includes('salinity') || message.includes('depth')) {
         responseType = 'component';
         componentToRender = 'profile_plots';
-        responseText = '📊 Here are the temperature and salinity profiles from the selected ARGO float. These show how oceanographic parameters change with depth:';
+        responseText = '📊 The temperature and salinity profiles from the selected ARGO float provide a vertical snapshot of the ocean’s physical properties, showing how these parameters change with depth. The temperature profile typically reveals warmer waters near the surface, influenced by sunlight and atmospheric conditions, which gradually cool as depth increases. In contrast, the salinity profile highlights variations caused by processes such as rainfall, evaporation, river inflow, or ocean circulation. Together, these profiles are essential for understanding the ocean’s stratification, density gradients, and mixing patterns. By analyzing them, scientists can better interpret ocean dynamics, track climate-related changes, and study how energy and matter are exchanged between the ocean and the atmosphere.';
       } 
       else if (message.includes('map') || message.includes('location') || message.includes('float') || message.includes('position')) {
         responseType = 'component';
         componentToRender = 'float_map';
-        responseText = '🗺️ Here\'s the interactive map showing all active ARGO float locations in the Indian Ocean region:';
+        responseText = '🗺️This interactive map shows the locations of all active ARGO floats currently operating in the Indian Ocean. 📍 Each marker represents the position of an individual float, pinpointing where it is collecting data beneath the ocean surface. By exploring the map, you can observe how floats are distributed across the basin, from nearshore coastal zones 🏝️ to deep offshore waters 🌊.\n The visualization highlights not only the geographic spread of floats 🌐 but also how their strategic positioning supports large-scale ocean monitoring 🔬. For instance, one float near 85°E, 5°S may record warm surface waters 🌡️ influenced by equatorial heating, while another positioned farther south could capture cooler, saltier waters 🧂 driven by deep ocean circulation.\n Together, these floats form a dynamic observing network ⚓, continuously measuring temperature, salinity, and pressure. This data is vital for tracking climate patterns 🌍, understanding ocean circulation arrows ➡️, and supporting long-term studies of the Indian Ocean’s role in the global climate system.  '
       }
       else if (message.includes('summary') || message.includes('data') || message.includes('overview')) {
-        responseText = '📈 **Data Summary**\n\nCurrently tracking **3 active ARGO floats** in the Indian Ocean:\n• Total profiles collected: 448\n• Latest measurements: April 2022\n• Geographic coverage: 85°E - 86°E, 5°S - 4°S\n• Parameters measured: Temperature, Salinity, Pressure\n\nWould you like to explore any specific visualization?';
+        responseText = '📈At present, we are tracking 3 active ARGO floats in the Indian Ocean, each contributing valuable insights into the region’s oceanography. 🌊 These floats have together collected 448 profiles, offering a detailed view of how conditions change with depth. The most recent measurements were recorded in April 2022, providing up-to-date data for analysis. 📍 The floats are spread across the eastern Indian Ocean, covering a geographic range from 85°E to 86°E longitude and 5°S to 4°S latitude. They continuously measure key parameters such as 🌡️ Temperature, 🧂 Salinity, and ⬇️ Pressure, which are crucial for understanding ocean circulation, climate variability, and marine ecosystems. For example, a float might record warmer surface waters near the equator while detecting cooler, saltier waters at greater depths, illustrating the vertical structure of the ocean.';
       }
       else if (message.includes('help') || message.includes('what') || message.includes('how')) {
         responseText = '🤖 **I can help you with:**\n\n🌐 **3D Visualizations** - Interactive 3D plots of ocean data\n📊 **Profile Plots** - Temperature and salinity vs depth charts\n🗺️ **Float Maps** - Geographic locations of ARGO floats\n📈 **Data Analysis** - Summaries and statistics\n\n**Try asking:**\n• "Show me a 3D visualization"\n• "What are the temperature profiles?"\n• "Where are the floats located?"\n• "Give me a data summary"';

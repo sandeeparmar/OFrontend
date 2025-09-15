@@ -35,7 +35,7 @@ const Dashboard = () => {
        
 
       
-      <div className="mt-28 flex  gap-3 right-0 px-5">
+      <div className="mt-28 mb-7 flex  gap-3 right-0 px-5">
         <button
           onClick={() => setViewMode('map')}
           className={`px-2 py-1.5 xs:px-3 xs:py-2 sm:px-4 sm:py-2 md:px-5 md:py-2.5 
