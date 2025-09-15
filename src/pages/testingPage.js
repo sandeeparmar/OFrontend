@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {  Thermometer, Waves , Play, Pause, Settings, Eye, Zap, Target  , ChevronDown, ChevronUp  } from 'lucide-react';
+import {  Thermometer, Waves , Play, Pause, Settings, Eye, Target   } from 'lucide-react';
 
 const OceanTemperatureVisualization = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showGuide , setShowGuide] = useState(false) ;
+  const [error, setError] = useState(null) ;
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [animationSpeed, setAnimationSpeed] = useState(50);
   const [isAnimating, setIsAnimating] = useState(false);
