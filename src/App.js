@@ -53,7 +53,7 @@ function AppContent() {
           />
           <Route 
             path="/testing" 
-            element={!user ? <OceanTemperatureVisualization /> : <Navigate to="/dashboard" />} 
+            element={user ? <OceanTemperatureVisualization /> : <Navigate to="/dashboard" />} 
           />
         </Routes>
       </div>

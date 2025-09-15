@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, MapPin, BarChart3, Globe, Sparkles ,Thermometer } from 'lucide-react';
+import { Send, Bot, User, MapPin, BarChart3, Globe, Thermometer } from 'lucide-react';
+import { Mic } from "lucide-react";
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import { argoFloats } from '../data/argoFloats.js';
 import { generateMockData } from '../utils/dataHandlers.js';
 import  ThreeDVisualization from '../components/Dashboard/ThreeDVisualization.js';
@@ -14,6 +16,23 @@ const Chatbot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
+  const [selectedLang, setSelectedLang] = useState("en-US");
+
+  // 🎙️ Speech recognition
+  const { transcript, listening, resetTranscript } = useSpeechRecognition();
+
+     const handleVoiceInput = () => {
+    if (!listening) {
+      resetTranscript();
+      SpeechRecognition.startListening({ language: selectedLang, continuous: true });
+    } else {
+      SpeechRecognition.stopListening();
+      if (transcript) {
+        setInputMessage(transcript);
+      }
+    }
+  }; 
+
 
   // Quick action buttons
   const quickActions = [
@@ -250,44 +269,72 @@ const Chatbot = () => {
 
       {/* Input Area */}
       <div className="bg-white border-t border-gray-200 px-6 py-4">
-        <div className="flex items-center space-x-3">
-          <div className="flex-1 relative">
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-              placeholder="Ask about ARGO data visualizations, profiles, or locations..."
-              className="w-full border border-gray-300 rounded-full px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-              disabled={isLoading}
-            />
-            <button
-              onClick={handleSendMessage}
-              disabled={isLoading || !inputMessage.trim()}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-2 rounded-full hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-          <div className="flex items-center space-x-1">
-            <Sparkles className="w-3 h-3" />
-            <span>Powered by AI • Press Enter to send</span>
-          </div>
-          <div className="flex items-center space-x-4">
-            <span>{argoFloats.length} active floats</span>
-            <span>448 total profiles</span>
-          </div>
-        </div>
+
+
+       <div className="flex items-center space-x-3">
+      <div className="flex-1 relative">
+
+        {/* 🌍 Language selector */}
+   
+          <select
+  value={selectedLang}
+  onChange={(e) => setSelectedLang(e.target.value)}
+  className="absolute left-3 top-1/2 transform -translate-y-1/2 
+             text-white text-sm 
+             bg-gray-600 border border-gray-400 
+             py-1 rounded-full
+             focus:outline-none focus:ring-2 focus:ring-white focus:border-green-500 
+             hover:bg-gray-400 transition-all duration-200 cursor-pointer"
+>
+        <option value="en-US">EN</option>
+        <option value="hi-IN">हिंदी</option>
+        <option value="es-ES">ES</option>
+        <option value="fr-FR">FR</option>
+        <option value="zh-CN">中文</option>
+      </select>
+
+
+
+        {/* ✍️ Input box */}
+        <input
+          type="text"
+          value={inputMessage}
+          onChange={(e) => setInputMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSendMessage();
+            }
+          }}
+          placeholder="Ask about ARGO data visualizations, profiles, or locations..."
+          className="w-full border border-gray-300 rounded-full pl-16 pr-24 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+          disabled={isLoading}
+        />
+
+        {/* 🎙️ Voice button */}
+        <button
+          onClick={handleVoiceInput}
+          className={`absolute right-12 top-1/2 transform -translate-y-1/2 p-2 rounded-full transition-all duration-200 ${
+            listening ? "bg-red-500 text-white" : "bg-gray-200 hover:bg-gray-300"
+          }`}
+        >
+          <Mic className="w-4 h-4" />
+        </button>
+
+        {/* 📩 Send button */}
+        <button
+          onClick={handleSendMessage}
+          disabled={isLoading || !inputMessage.trim()}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-2 rounded-full hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+        >
+          <Send className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  
 
       </div>
+
     </div>
   );
 };

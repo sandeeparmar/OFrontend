@@ -7,9 +7,9 @@ const Sidebar = () => {
   const { user, logout } = useAuth();
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: '📊' },
-    { name: 'Chatbot', href: '/chatbot', icon: '🤖' },
-    // { name: 'WorldMap' , href :'/' , icon :''}
+    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Chatbot', href: '/chatbot' },
+    { name: 'Visualisation' , href :'/testing'}
   ];
 
   if (user && user.role === 'admin') {
@@ -19,7 +19,7 @@ const Sidebar = () => {
   return (
     <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
 
-      <div className="flex top-0 items-center justify-center h-[6.5rem] px-7 py-[6.5] bg-[#3f2b96]  shadow-lg border-b-4 border-blue-800 text-black">
+      <div className="flex top-0 items-center justify-center h-[6.5rem] px-7 py-[6.5] bg-gradient-to-r from-[#536976] to-[#BBD2C5]  shadow-lg border-b-4 border-blue-800 text-black">
        
         <div className="flex items-center gap-3">
           <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
@@ -39,11 +39,14 @@ const Sidebar = () => {
             <Link
               key={item.name}
               to={item.href}
-              className={`flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-ocean-light ${
+              className={`flex items-center text-gray-700 text-xl 
+             font-semibold mb-2 xs:mb-3 sm:mb-4  
+             text-black cursor-pointer hover:text-green-500 
+             hover:bg-green-50 px-2 py-1 rounded-lg 
+             transition-all duration-300 hover:scale-105 origin-left  ${
                 location.pathname === item.href ? 'bg-ocean-light text-ocean-dark font-medium' : ''
               }`}
             >
-              <span className="mr-3 text-lg">{item.icon}</span>
               {item.name}
             </Link>
           ))}
@@ -53,10 +56,18 @@ const Sidebar = () => {
       <div className="absolute bottom-0 w-full p-4 border-t">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="w-8 h-8 bg-ocean-medium rounded-full flex items-center justify-center text-white">
-              {user?.username?.charAt(0).toUpperCase()}
+            <div className="w-8 h-8 bg-ocean-medium rounded-full flex items-center justify-center text-white gap-3">
+              <div className="text-black bg-gray-300 border-2 rounded-full shadow m-3
+ ">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="7" r="4"/>
+                  <path d="M12 13c-4 0-7 2-7 5v3h14v-3c0-3-3-5-7-5z"/>
+                </svg>
+              </div>
+
+
             </div>
-            <div className="ml-2">
+            <div className="ml-4">
               <p className="text-sm font-medium text-gray-900">{user?.username}</p>
               <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
             </div>

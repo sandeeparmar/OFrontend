@@ -15,7 +15,7 @@ const Dashboard = () => {
   return (
     <div className="h-full  flex flex-col bg-gray-50">
 
-        <div className="fixed top-0 w-full flex  items-center justify-center h-[6.5rem]  py-7 bg-[#3f2b96]  shadow-lg border-b-4 border-blue-800 text-black gap-2 z-50 ">
+        <div className="fixed top-0 w-full flex  items-center justify-center h-[6.5rem]  py-7 bg-gradient-to-r from-[#536976] to-[#BBD2C5]  shadow-lg border-b-4 border-blue-800 text-black gap-2 z-50 ">
        
         <div className="flex items-center gap-3 ">
           <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">

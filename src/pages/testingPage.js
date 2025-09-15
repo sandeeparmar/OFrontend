@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Globe, Thermometer, Waves, Info, Play, Pause, MapPin, Calendar, Database } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Globe, Thermometer, Waves, Info, Play, Pause, Settings, Eye, Zap, Target } from 'lucide-react';
 
 const OceanTemperatureVisualization = () => {
   const [data, setData] = useState(null);
@@ -9,89 +9,66 @@ const OceanTemperatureVisualization = () => {
   const [animationSpeed, setAnimationSpeed] = useState(50);
   const [isAnimating, setIsAnimating] = useState(false);
   const [currentFrame, setCurrentFrame] = useState(0);
-  const [dataInfo, setDataInfo] = useState(null);
+  const [viewMode, setViewMode] = useState('temperature'); // temperature, depth, combined
+  const [showControls, setShowControls] = useState(false);
+  const [hoverPoint, setHoverPoint] = useState(null);
+  const [temperatureFilter, setTemperatureFilter] = useState({ min: -5, max: 35 });
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
 
-  // Memoize the fetchOceanData function with useCallback
-  const fetchOceanData = useCallback(async () => {
+  useEffect(() => {
+    fetchOceanData();
+  }, []);
+
+  const fetchOceanData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://data.scripps.earth/argo/2017/argo-201702-temp-2p5-1p0.json');
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const jsonData = await response.json();
-      
-      // Check if data has the expected structure
-      if (jsonData && jsonData.metadata) {
-        setDataInfo(jsonData.metadata);
-        setData(jsonData.data || []);
-      } else {
-        setData(jsonData);
-      }
-      
+      // Simulating API call - in real scenario you'd fetch from actual endpoint
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate loading
+      createSampleData();
       setError(null);
     } catch (err) {
       console.error('Error fetching data:', err);
       setError(`Failed to fetch ocean temperature data: ${err.message}`);
-      // Create sample data for demonstration
       createSampleData();
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  const createSampleData = useCallback(() => {
-    // Generate sample ocean temperature data with more realistic structure
+  const createSampleData = () => {
     const sampleData = [];
     for (let lat = -60; lat <= 60; lat += 2.5) {
       for (let lon = -180; lon < 180; lon += 2.5) {
-        // Simulate ocean temperature based on latitude and some noise
+        // More realistic ocean temperature simulation
         const baseTemp = 25 - Math.abs(lat) * 0.4; // Warmer at equator
-        const noise = (Math.sin(lon * 0.1) + Math.cos(lat * 0.1)) * 3;
-        const temp = baseTemp + noise + Math.random() * 2 - 1;
+        const gulfStreamEffect = Math.exp(-Math.pow((lat - 40) / 10, 2)) * Math.exp(-Math.pow((lon + 60) / 20, 2)) * 8;
+        const currentEffect = Math.sin(lon * 0.02) * Math.cos(lat * 0.02) * 4;
+        const seasonalVariation = Math.sin(Date.now() * 0.001 + lon * 0.01) * 2;
+        
+        const temp = baseTemp + gulfStreamEffect + currentEffect + seasonalVariation + Math.random() * 3 - 1.5;
+        const depth = Math.random() * 2000 + 100; // 100m to 2100m
         
         sampleData.push({
           lat,
           lon,
-          temperature: Math.max(-2, Math.min(35, temp)), // Ocean temp range
-          depth: Math.random() * 1000, // Random depth
-          salinity: 35 + (Math.random() * 2 - 1), // Salinity in practical salinity units
-          pressure: Math.random() * 100, // Pressure in decibars
-          timestamp: new Date(2017, 1, Math.floor(Math.random() * 28) + 1).toISOString(),
-          platform: `Argo${Math.floor(Math.random() * 9000) + 1000}`,
-          quality: Math.random() > 0.1 ? 'good' : 'questionable'
+          temp: Math.max(-2, Math.min(35, temp)),
+          depth: depth,
+          salinity: 34 + Math.random() * 2, // Typical ocean salinity
+          current: Math.random() * 2 // Current speed
         });
       }
     }
-    
-    setDataInfo({
-      title: "Sample Ocean Temperature Data",
-      description: "Simulated data for demonstration purposes",
-      dateRange: "February 2017",
-      resolution: "2.5° × 2.5°",
-      variables: ["temperature", "salinity", "pressure", "depth"]
-    });
-    
     setData(sampleData);
-  }, []);
+  };
 
-  const getTemperatureColor = useCallback((temp) => {
-    // More refined color scale from cold to hot
-    if (temp < 0) return 'hsl(240, 100%, 40%)'; // Very cold - deep blue
-    if (temp < 10) return `hsl(210, 100%, ${50 - (temp/10)*10}%)`; // Cold - blue
-    if (temp < 15) return `hsl(180, 100%, ${40 + (temp-10)*4}%)`; // Cool - cyan
-    if (temp < 20) return `hsl(120, 100%, ${40 + (temp-15)*4}%)`; // Moderate - green
-    if (temp < 25) return `hsl(60, 100%, ${40 + (temp-20)*4}%)`; // Warm - yellow
-    if (temp < 30) return `hsl(30, 100%, ${50 + (temp-25)*2}%)`; // Hot - orange
-    return 'hsl(0, 100%, 60%)'; // Very hot - red
-  }, []);
+  useEffect(() => {
+    if (data && canvasRef.current) {
+      drawVisualization();
+    }
+  }, [data, currentFrame, viewMode, temperatureFilter]);
 
-  // Memoize the drawVisualization function
-  const drawVisualization = useCallback(() => {
+  const drawVisualization = () => {
     const canvas = canvasRef.current;
     if (!canvas || !data) return;
 
@@ -99,118 +76,162 @@ const OceanTemperatureVisualization = () => {
     const width = canvas.width;
     const height = canvas.height;
 
-    // Clear canvas with a gradient background
-    const gradient = ctx.createRadialGradient(width/2, height/2, 50, width/2, height/2, width/2);
-    gradient.addColorStop(0, '#0a1a2a');
-    gradient.addColorStop(1, '#050f1a');
+    // Clear canvas with new dark background
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, '#2C3E50');
+    gradient.addColorStop(0.5, '#536976');
+    gradient.addColorStop(1, '#1a1a2e');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
-    // Draw ocean temperature data
-    data.forEach((point, index) => {
-      if (index % 10 !== currentFrame % 10 && isAnimating) return; // Animation effect
+    // Filter data based on temperature range
+    const filteredData = data.filter(point => 
+      point.temp >= temperatureFilter.min && point.temp <= temperatureFilter.max
+    );
+
+    filteredData.forEach((point, index) => {
+      if (index % 8 !== currentFrame % 8 && isAnimating) return; // Smoother animation
 
       const x = ((point.lon + 180) / 360) * width;
       const y = ((90 - point.lat) / 180) * height;
       
-      // Color based on temperature
-      const temp = point.temperature || point.temp || 15;
-      const color = getTemperatureColor(temp);
+      let color, size;
+      
+      switch(viewMode) {
+        case 'temperature':
+          color = getTemperatureColor(point.temp);
+          size = Math.max(1.5, Math.abs(point.temp - 15) / 4);
+          break;
+        case 'depth':
+          color = getDepthColor(point.depth);
+          size = Math.max(1, point.depth / 400);
+          break;
+        case 'combined':
+          color = getCombinedColor(point.temp, point.depth);
+          size = Math.max(1.5, (Math.abs(point.temp - 15) + point.depth / 200) / 6);
+          break;
+        default:
+          color = getTemperatureColor(point.temp);
+          size = 2;
+      }
       
       ctx.fillStyle = color;
       ctx.globalAlpha = 0.8;
       
-      // Draw point with size based on temperature intensity
-      const size = Math.max(1, Math.abs(temp - 15) / 5);
+      // Draw main point
       ctx.beginPath();
       ctx.arc(x, y, size, 0, 2 * Math.PI);
       ctx.fill();
       
-      // Add glow effect for extreme temperatures
-      if (Math.abs(temp - 15) > 10) {
-        ctx.globalAlpha = 0.3;
+      // Add pulsing effect for extreme temperatures
+      if (Math.abs(point.temp - 15) > 12) {
+        ctx.globalAlpha = 0.3 + 0.2 * Math.sin(currentFrame * 0.3);
+        ctx.beginPath();
+        ctx.arc(x, y, size * 1.8, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+
+      // Interactive hover effect
+      if (hoverPoint && Math.abs(hoverPoint.x - x) < 20 && Math.abs(hoverPoint.y - y) < 20) {
+        ctx.globalAlpha = 0.6;
+        ctx.strokeStyle = '#FFD700';
+        ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(x, y, size * 2, 0, 2 * Math.PI);
-        ctx.fill();
+        ctx.stroke();
       }
     });
 
     ctx.globalAlpha = 1;
     
-    // Draw grid lines with better styling
+    // Enhanced grid with better visibility
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 0.5;
     
-    // Latitude lines
-    for (let lat = -90; lat <= 90; lat += 30) {
+    // Latitude lines with labels
+    for (let lat = -60; lat <= 60; lat += 30) {
       const y = ((90 - lat) / 180) * height;
       ctx.beginPath();
       ctx.moveTo(0, y);
       ctx.lineTo(width, y);
       ctx.stroke();
+      
+      // Add coordinate labels
       ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.fillText(`${lat}°`, 5, y - 5);
+      ctx.font = '12px Arial';
+      ctx.fillText(`${lat}°`, 10, y - 5);
     }
     
-    // Longitude lines
+    // Longitude lines with labels
     for (let lon = -180; lon <= 180; lon += 60) {
       const x = ((lon + 180) / 360) * width;
       ctx.beginPath();
       ctx.moveTo(x, 0);
       ctx.lineTo(x, height);
       ctx.stroke();
+      
       ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.fillText(`${lon}°`, x + 5, 15);
+      ctx.fillText(`${lon}°`, x + 5, height - 10);
     }
+
+    // Add temperature scale legend
+    drawLegend(ctx, width, height);
+  };
+
+  const drawLegend = (ctx, width, height) => {
+    const legendWidth = 200;
+    const legendHeight = 20;
+    const legendX = width - legendWidth - 20;
+    const legendY = height - legendHeight - 40;
+
+    // Legend background
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(legendX - 10, legendY - 25, legendWidth + 20, legendHeight + 40);
+
+    // Temperature gradient
+    const gradient = ctx.createLinearGradient(legendX, 0, legendX + legendWidth, 0);
+    gradient.addColorStop(0, '#4A90E2');
+    gradient.addColorStop(0.25, '#50C878');
+    gradient.addColorStop(0.5, '#FFD700');
+    gradient.addColorStop(0.75, '#FF8C00');
+    gradient.addColorStop(1, '#FF4500');
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(legendX, legendY, legendWidth, legendHeight);
+
+    // Legend labels
+    ctx.fillStyle = 'white';
+    ctx.font = '12px Arial';
+    ctx.fillText('Temperature Scale', legendX, legendY - 8);
+    ctx.fillText('-2°C', legendX - 5, legendY + legendHeight + 15);
+    ctx.fillText('35°C', legendX + legendWidth - 20, legendY + legendHeight + 15);
+  };
+
+  const getTemperatureColor = (temp) => {
+    const normalized = Math.max(0, Math.min(1, (temp + 5) / 40));
     
-    // Draw equator and prime meridian with emphasis
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-    ctx.lineWidth = 1.5;
-    
-    // Equator
-    const equatorY = ((90 - 0) / 180) * height;
-    ctx.beginPath();
-    ctx.moveTo(0, equatorY);
-    ctx.lineTo(width, equatorY);
-    ctx.stroke();
-    
-    // Prime meridian
-    const primeMeridianX = ((0 + 180) / 360) * width;
-    ctx.beginPath();
-    ctx.moveTo(primeMeridianX, 0);
-    ctx.lineTo(primeMeridianX, height);
-    ctx.stroke();
-  }, [data, currentFrame, isAnimating, getTemperatureColor]);
+    if (normalized < 0.2) return `hsl(210, 80%, ${40 + normalized * 40}%)`;
+    if (normalized < 0.4) return `hsl(150, 70%, ${50 + normalized * 30}%)`;
+    if (normalized < 0.6) return `hsl(50, 90%, ${60 + normalized * 25}%)`;
+    if (normalized < 0.8) return `hsl(30, 95%, ${65 + normalized * 20}%)`;
+    return `hsl(10, 100%, ${60 + normalized * 20}%)`;
+  };
 
-  useEffect(() => {
-    fetchOceanData();
-  }, [fetchOceanData]); // Now fetchOceanData is a dependency but it's memoized
+  const getDepthColor = (depth) => {
+    const normalized = Math.max(0, Math.min(1, depth / 2000));
+    return `hsl(${220 - normalized * 60}, 70%, ${30 + normalized * 50}%)`;
+  };
 
-  useEffect(() => {
-    if (data && canvasRef.current) {
-      drawVisualization();
-    }
-  }, [data, currentFrame, drawVisualization]); // Now drawVisualization is a dependency but it's memoized
+  const getCombinedColor = (temp, depth) => {
+    const tempNorm = Math.max(0, Math.min(1, (temp + 5) / 40));
+    const depthNorm = Math.max(0, Math.min(1, depth / 2000));
+    const hue = 220 - tempNorm * 180 + depthNorm * 30;
+    const saturation = 60 + tempNorm * 40;
+    const lightness = 40 + tempNorm * 30;
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  };
 
-  const formatCoordinate = useCallback((coord, isLatitude) => {
-    const absValue = Math.abs(coord);
-    const direction = isLatitude 
-      ? (coord >= 0 ? 'N' : 'S') 
-      : (coord >= 0 ? 'E' : 'W');
-    return `${absValue.toFixed(2)}° ${direction}`;
-  }, []);
-
-  const formatDate = useCallback((dateString) => {
-    if (!dateString) return 'Unknown';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-  }, []);
-
-  const handleCanvasClick = useCallback((event) => {
+  const handleCanvasClick = (event) => {
     if (!data) return;
     
     const canvas = canvasRef.current;
@@ -226,23 +247,33 @@ const OceanTemperatureVisualization = () => {
     let minDistance = Infinity;
     
     data.forEach(point => {
-      const distance = Math.sqrt(
-        Math.pow(point.lat - lat, 2) + Math.pow(point.lon - lon, 2)
-      );
+      const px = ((point.lon + 180) / 360) * canvas.width;
+      const py = ((90 - point.lat) / 180) * canvas.height;
+      const distance = Math.sqrt(Math.pow(px - x, 2) + Math.pow(py - y, 2));
+      
       if (distance < minDistance) {
         minDistance = distance;
         nearest = point;
       }
     });
     
-    if (nearest && minDistance < 5) {
+    if (nearest && minDistance < 15) {
       setSelectedPoint({...nearest, clickLat: lat, clickLon: lon});
     } else {
       setSelectedPoint(null);
     }
-  }, [data]);
+  };
 
-  const toggleAnimation = useCallback(() => {
+  const handleCanvasMouseMove = (event) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    setHoverPoint({x, y});
+  };
+
+  const toggleAnimation = () => {
     if (isAnimating) {
       if (animationRef.current) {
         clearInterval(animationRef.current);
@@ -252,16 +283,16 @@ const OceanTemperatureVisualization = () => {
       setIsAnimating(true);
       animationRef.current = setInterval(() => {
         setCurrentFrame(prev => (prev + 1) % 100);
-      }, 100 - animationSpeed);
+      }, 120 - animationSpeed);
     }
-  }, [isAnimating, animationSpeed]);
+  };
 
   useEffect(() => {
     if (isAnimating && animationRef.current) {
       clearInterval(animationRef.current);
       animationRef.current = setInterval(() => {
         setCurrentFrame(prev => (prev + 1) % 100);
-      }, 100 - animationSpeed);
+      }, 120 - animationSpeed);
     }
   }, [animationSpeed, isAnimating]);
 
@@ -275,13 +306,16 @@ const OceanTemperatureVisualization = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 flex items-center justify-center">
         <div className="text-center text-white">
-          <Waves className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <div className="text-xl font-semibold mb-2">Loading Ocean Data...</div>
-          <div className="text-blue-300">Fetching Argo temperature measurements</div>
-          <div className="mt-4 w-64 h-2 bg-blue-800 rounded-full overflow-hidden">
-            <div className="h-full bg-blue-500 animate-progress"></div>
+          <Waves className="w-16 h-16 mx-auto mb-6 animate-bounce" style={{color: '#536976'}} />
+          <div className="text-2xl font-bold mb-4" style={{color: '#536976'}}>Loading Ocean Data...</div>
+          <div className="text-gray-300">Preparing interactive visualization</div>
+          <div className="mt-4 w-48 bg-gray-700 rounded-full h-2 mx-auto">
+            <div 
+              className="h-2 rounded-full animate-pulse transition-all duration-1000" 
+              style={{backgroundColor: '#536976', width: '70%'}}
+            ></div>
           </div>
         </div>
       </div>
@@ -289,24 +323,36 @@ const OceanTemperatureVisualization = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white overflow-hidden">
-      {/* Header */}
-      <div className="relative z-10 p-6 bg-black bg-opacity-50 backdrop-blur-sm border-b border-blue-800">
+    <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 text-white overflow-hidden">
+      {/* Modern Header */}
+      <div className="relative z-10 p-6 bg-black bg-opacity-60 backdrop-blur-md">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Globe className="w-8 h-8 text-blue-400" />
+          <div className="flex items-center space-x-4">
+            <div className="p-2 rounded-full" style={{backgroundColor: '#536976'}}>
+              <Globe className="w-8 h-8 text-white" />
+            </div>
             <div>
-              <h1 className="text-2xl font-bold">Ocean Temperature Visualization</h1>
-              <p className="text-blue-300 text-sm">
-                {dataInfo?.title || "Argo Float Data"} - {dataInfo?.dateRange || "February 2017"}
-              </p>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                Ocean Explorer
+              </h1>
+              <p className="text-gray-300 text-sm">Interactive Temperature & Depth Visualization</p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setShowControls(!showControls)}
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105"
+              style={{backgroundColor: showControls ? '#536976' : 'rgba(83, 105, 118, 0.3)'}}
+            >
+              <Settings className="w-4 h-4" />
+              <span>Controls</span>
+            </button>
+            
             <button
               onClick={toggleAnimation}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105"
+              style={{backgroundColor: isAnimating ? '#FF6B6B' : '#536976'}}
             >
               {isAnimating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
               <span>{isAnimating ? 'Pause' : 'Animate'}</span>
@@ -314,51 +360,104 @@ const OceanTemperatureVisualization = () => {
             
             <button
               onClick={fetchOceanData}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-all duration-300 hover:scale-105"
             >
-              Refresh Data
+              Refresh
             </button>
           </div>
         </div>
 
-        {/* Controls and Info */}
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm">Animation Speed:</span>
-              <input
-                type="range"
-                min="1"
-                max="99"
-                value={animationSpeed}
-                onChange={(e) => setAnimationSpeed(Number(e.target.value))}
-                className="w-24"
-              />
+        {/* Advanced Controls Panel */}
+        {showControls && (
+          <div className="mt-6 p-4 bg-black bg-opacity-40 rounded-lg border" style={{borderColor: '#536976'}}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* View Mode */}
+              <div>
+                <label className="block text-sm font-medium mb-2">View Mode</label>
+                <select
+                  value={viewMode}
+                  onChange={(e) => setViewMode(e.target.value)}
+                  className="w-full p-2 rounded bg-gray-800 border border-gray-600 text-white"
+                >
+                  <option value="temperature">Temperature</option>
+                  <option value="depth">Ocean Depth</option>
+                  <option value="combined">Combined View</option>
+                </select>
+              </div>
+
+              {/* Animation Speed */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Animation Speed: {animationSpeed}%
+                </label>
+                <input
+                  type="range"
+                  min="1"
+                  max="99"
+                  value={animationSpeed}
+                  onChange={(e) => setAnimationSpeed(Number(e.target.value))}
+                  className="w-full"
+                  style={{accentColor: '#536976'}}
+                />
+              </div>
+
+              {/* Temperature Filter */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Temperature Range: {temperatureFilter.min}°C - {temperatureFilter.max}°C
+                </label>
+                <div className="flex space-x-2">
+                  <input
+                    type="range"
+                    min="-5"
+                    max="35"
+                    value={temperatureFilter.min}
+                    onChange={(e) => setTemperatureFilter(prev => ({...prev, min: Number(e.target.value)}))}
+                    className="flex-1"
+                    style={{accentColor: '#536976'}}
+                  />
+                  <input
+                    type="range"
+                    min="-5"
+                    max="35"
+                    value={temperatureFilter.max}
+                    onChange={(e) => setTemperatureFilter(prev => ({...prev, max: Number(e.target.value)}))}
+                    className="flex-1"
+                    style={{accentColor: '#536976'}}
+                  />
+                </div>
+              </div>
             </div>
-            
-            <div className="flex items-center space-x-4 text-sm">
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-blue-500 rounded-sm"></div>
-                <span>Cold (&lt; 10°C)</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-green-500 rounded-sm"></div>
-                <span>Moderate (15-20°C)</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-red-500 rounded-sm"></div>
-                <span>Warm (&gt; 25°C)</span>
-              </div>
+
+            {/* Quick Actions */}
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                onClick={() => setViewMode('temperature')}
+                className={`px-3 py-1 rounded-full text-sm transition-all duration-300 ${viewMode === 'temperature' ? 'text-white' : 'text-gray-300 hover:text-white'}`}
+                style={{backgroundColor: viewMode === 'temperature' ? '#536976' : 'rgba(83, 105, 118, 0.3)'}}
+              >
+                <Thermometer className="w-4 h-4 inline mr-1" />
+                Temperature
+              </button>
+              <button
+                onClick={() => setViewMode('depth')}
+                className={`px-3 py-1 rounded-full text-sm transition-all duration-300 ${viewMode === 'depth' ? 'text-white' : 'text-gray-300 hover:text-white'}`}
+                style={{backgroundColor: viewMode === 'depth' ? '#536976' : 'rgba(83, 105, 118, 0.3)'}}
+              >
+                <Waves className="w-4 h-4 inline mr-1" />
+                Depth
+              </button>
+              <button
+                onClick={() => setViewMode('combined')}
+                className={`px-3 py-1 rounded-full text-sm transition-all duration-300 ${viewMode === 'combined' ? 'text-white' : 'text-gray-300 hover:text-white'}`}
+                style={{backgroundColor: viewMode === 'combined' ? '#536976' : 'rgba(83, 105, 118, 0.3)'}}
+              >
+                <Eye className="w-4 h-4 inline mr-1" />
+                Combined
+              </button>
             </div>
           </div>
-          
-          {dataInfo && (
-            <div className="text-xs text-blue-300 flex items-center">
-              <Database className="w-3 h-3 mr-1" />
-              {dataInfo.resolution} resolution
-            </div>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Main Visualization */}
@@ -366,123 +465,93 @@ const OceanTemperatureVisualization = () => {
         <canvas
           ref={canvasRef}
           width={window.innerWidth || 1200}
-          height={(window.innerHeight || 800) - 200}
+          height={(window.innerHeight || 800) - (showControls ? 300 : 200)}
           onClick={handleCanvasClick}
+          onMouseMove={handleCanvasMouseMove}
           className="w-full cursor-crosshair"
+          style={{ imageRendering: 'auto' }}
         />
 
-        {/* Info Panel */}
+        {/* Enhanced Info Panel */}
         {selectedPoint && (
-          <div className="absolute top-4 right-4 bg-black bg-opacity-90 backdrop-blur-sm p-4 rounded-lg border border-blue-500 max-w-xs shadow-xl">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center space-x-2">
-                <MapPin className="w-5 h-5 text-blue-400" />
-                <span className="font-semibold">Data Point Details</span>
-              </div>
-              <button
-                onClick={() => setSelectedPoint(null)}
-                className="text-blue-300 hover:text-blue-200 text-sm"
-              >
-                Close
-              </button>
+          <div className="absolute top-4 right-4 bg-black bg-opacity-90 backdrop-blur-md p-6 rounded-xl border-2 max-w-xs transform transition-all duration-300 scale-100 hover:scale-105" style={{borderColor: '#536976'}}>
+            <div className="flex items-center space-x-3 mb-4">
+              <Target className="w-6 h-6" style={{color: '#536976'}} />
+              <span className="font-bold text-lg">Data Point</span>
             </div>
             
-            <div className="space-y-3 text-sm">
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <div className="text-blue-300">Latitude</div>
-                  <div className="font-mono">{formatCoordinate(selectedPoint.lat, true)}</div>
-                </div>
-                <div>
-                  <div className="text-blue-300">Longitude</div>
-                  <div className="font-mono">{formatCoordinate(selectedPoint.lon, false)}</div>
-                </div>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-300">Location:</span>
+                <span className="font-mono">{selectedPoint.lat.toFixed(2)}°, {selectedPoint.lon.toFixed(2)}°</span>
               </div>
               
-              <div className="pt-2 border-t border-blue-800">
-                <div className="flex items-center space-x-2 text-blue-300 mb-1">
-                  <Thermometer className="w-4 h-4" />
-                  <span>Temperature</span>
-                </div>
-                <div className="font-mono">{(selectedPoint.temperature || selectedPoint.temp || 15).toFixed(2)}°C</div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-300">Temperature:</span>
+                <span className="font-bold text-xl" style={{color: '#536976'}}>
+                  {selectedPoint.temp.toFixed(1)}°C
+                </span>
               </div>
               
-              {selectedPoint.depth && (
-                <div>
-                  <div className="text-blue-300">Depth</div>
-                  <div className="font-mono">{selectedPoint.depth.toFixed(0)} meters</div>
-                </div>
-              )}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-300">Depth:</span>
+                <span className="font-semibold">{selectedPoint.depth.toFixed(0)}m</span>
+              </div>
               
-              {selectedPoint.salinity && (
-                <div>
-                  <div className="text-blue-300">Salinity</div>
-                  <div className="font-mono">{selectedPoint.salinity.toFixed(2)} PSU</div>
-                </div>
-              )}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-300">Salinity:</span>
+                <span className="font-semibold">{selectedPoint.salinity?.toFixed(1) || 'N/A'} PSU</span>
+              </div>
               
-              {selectedPoint.pressure && (
-                <div>
-                  <div className="text-blue-300">Pressure</div>
-                  <div className="font-mono">{selectedPoint.pressure.toFixed(1)} dbar</div>
+              {/* Temperature category */}
+              <div className="mt-4 p-3 rounded-lg" style={{backgroundColor: 'rgba(83, 105, 118, 0.2)'}}>
+                <div className="text-sm text-gray-300 mb-1">Classification:</div>
+                <div className="font-semibold">
+                  {selectedPoint.temp < 5 ? '🧊 Cold Water' : 
+                   selectedPoint.temp < 15 ? '🌊 Cool Water' :
+                   selectedPoint.temp < 25 ? '🏖️ Warm Water' : '🔥 Hot Water'}
                 </div>
-              )}
-              
-              {selectedPoint.timestamp && (
-                <div>
-                  <div className="flex items-center space-x-2 text-blue-300 mb-1">
-                    <Calendar className="w-4 h-4" />
-                    <span>Measurement Date</span>
-                  </div>
-                  <div>{formatDate(selectedPoint.timestamp)}</div>
-                </div>
-              )}
-              
-              {selectedPoint.platform && (
-                <div>
-                  <div className="text-blue-300">Platform</div>
-                  <div>{selectedPoint.platform}</div>
-                </div>
-              )}
-              
-              {selectedPoint.quality && (
-                <div>
-                  <div className="text-blue-300">Data Quality</div>
-                  <div className={selectedPoint.quality === 'good' ? 'text-green-400' : 'text-yellow-400'}>
-                    {selectedPoint.quality.charAt(0).toUpperCase() + selectedPoint.quality.slice(1)}
-                  </div>
-                </div>
-              )}
+              </div>
+            </div>
+            
+            <button
+              onClick={() => setSelectedPoint(null)}
+              className="mt-4 w-full py-2 rounded-lg transition-colors duration-300 hover:opacity-80"
+              style={{backgroundColor: '#536976'}}
+            >
+              Close
+            </button>
+          </div>
+        )}
+
+        {/* Interactive Tutorial */}
+        {!selectedPoint && (
+          <div className="absolute top-4 left-4 bg-black bg-opacity-80 backdrop-blur-sm p-4 rounded-lg border" style={{borderColor: '#536976'}}>
+            <div className="flex items-center space-x-2 mb-2">
+              <Zap className="w-5 h-5" style={{color: '#536976'}} />
+              <span className="font-semibold">Interactive Guide</span>
+            </div>
+            <div className="space-y-2 text-sm text-gray-300">
+              <div>🖱️ Click any point to explore data</div>
+              <div>🎛️ Use controls to change view modes</div>
+              <div>🎬 Toggle animation for live effect</div>
+              <div>🌡️ Adjust temperature filters</div>
             </div>
           </div>
         )}
 
         {/* Status Messages */}
         {error && (
-          <div className="absolute bottom-4 left-4 bg-red-900 bg-opacity-80 backdrop-blur-sm p-4 rounded-lg border border-red-500 max-w-md">
+          <div className="absolute bottom-4 left-4 bg-red-900 bg-opacity-90 backdrop-blur-sm p-4 rounded-lg border border-red-500 max-w-md">
             <div className="flex items-center space-x-2 mb-2">
               <Info className="w-5 h-5 text-red-400" />
-              <span className="font-semibold">Notice</span>
+              <span className="font-semibold">Demo Mode</span>
             </div>
-            <div className="text-sm">
-              {error.includes('sample') 
-                ? 'Using sample data for demonstration. The visualization shows simulated ocean temperature patterns.'
-                : error
-              }
+            <div className="text-sm text-gray-300">
+              Using simulated data for demonstration. The visualization shows realistic ocean temperature and depth patterns.
             </div>
           </div>
         )}
-      </div>
-
-      {/* Footer */}
-      <div className="bg-black bg-opacity-50 backdrop-blur-sm p-4 text-center text-sm text-blue-300 border-t border-blue-800">
-        <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4">
-          <span>Inspired by <span className="text-blue-400">earth.nullschool.net</span></span>
-          <span className="hidden sm:inline">•</span>
-          <span>Data from <span className="text-blue-400">Scripps Institution of Oceanography</span></span>
-          <span className="hidden sm:inline">•</span>
-          <span>Click on the map to explore temperature data</span>
-        </div>
       </div>
     </div>
   );
