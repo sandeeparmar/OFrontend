@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, MapPin, BarChart3, Globe, Thermometer } from 'lucide-react';
+import { Send, User } from 'lucide-react';
 import { Mic } from "lucide-react";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import { argoFloats } from '../data/argoFloats.js';
@@ -8,7 +8,8 @@ import  ThreeDVisualization from '../components/Dashboard/ThreeDVisualization.js
 import ProfilePlots from '../components/Dashboard/ProfilePlots.js';
 import ArgoFloatMap from '../components/Dashboard/ArgoFloatMap.js';
 import FloatList from '../components/Dashboard/FloatList.js';
-
+import { quickActions } from './quickActions.js';
+import { Header } from '../components/header.js';
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
@@ -17,29 +18,42 @@ const Chatbot = () => {
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const [selectedLang, setSelectedLang] = useState("en-US");
+  const [wasListening, setWasListening] = useState(false); // Track previous listening state
 
   // 🎙️ Speech recognition
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
-     const handleVoiceInput = () => {
+  // Auto-send message when voice recording stops
+  useEffect(() => {
+    // If we were listening and now we're not, and we have a transcript
+    if (wasListening && !listening && transcript.trim()) {
+      // Auto-send the voice message after a short delay
+      setTimeout(() => {
+        handleSendMessage(transcript);
+        resetTranscript();
+      }, 500);
+    }
+    setWasListening(listening);
+  }, [listening, transcript, wasListening]);
+
+  // Update input field with transcript in real-time
+  useEffect(() => {
+    if (listening && transcript) {
+      setInputMessage(transcript);
+    }
+  }, [transcript, listening]);
+
+   const handleVoiceInput = () => {
     if (!listening) {
       resetTranscript();
+      setInputMessage(''); // Clear input when starting to record
       SpeechRecognition.startListening({ language: selectedLang, continuous: true });
     } else {
       SpeechRecognition.stopListening();
-      if (transcript) {
-        setInputMessage(transcript);
-      }
+      // Note: Auto-send logic is handled in useEffect above
     }
   }; 
 
-  // Quick action buttons
-  const quickActions = [
-    { label: '3D Visualization', icon: Globe, query: 'Show me a 3D visualization of the data' },
-    { label: 'Temperature Profiles', icon: Thermometer, query: 'Show temperature and salinity profiles' },
-    { label: 'Float Locations', icon: MapPin, query: 'Show me the map with float locations' },
-    { label: 'Data Summary', icon: BarChart3, query: 'Give me a summary of available data' },
-  ];
 
   // Smooth scroll to bottom
   const scrollToBottom = () => {
@@ -83,98 +97,99 @@ const Chatbot = () => {
     }
   };
 
-  // Enhanced message handling
-  // Enhanced message handling
-const handleSendMessage = async (messageText = inputMessage) => {
-  if (!messageText.trim()) return;
+  // Enhanced message handling - Fixed the trim error
+  const handleSendMessage = async (messageText = inputMessage) => {
+    // Ensure messageText is a string and not empty
+    const textToSend = String(messageText || '').trim();
+    if (!textToSend) return;
 
-  const userMessage = {
-    id: Date.now(),
-    type: "user",
-    content: messageText,
-    timestamp: new Date().toISOString(),
-  };
-
-  setMessages((prev) => [...prev, userMessage]);
-  setInputMessage("");
-  setIsLoading(true);
-
-  // Simulate API delay
-  setTimeout(() => {
-    let responseText = "";
-    let componentToRender = null;
-
-    const message = messageText.toLowerCase();
-
-    if (
-      message.includes("3d") ||
-      message.includes("three") ||
-      message.includes("visualization") ||
-      message.includes("globe")
-    ) {
-      responseText =
-        "🌐 This interactive 3D visualization presents ARGO float data. Let me generate the chart for you...";
-      componentToRender = "3d_visualization";
-    } else if (
-      message.includes("profile") ||
-      message.includes("temperature") ||
-      message.includes("salinity") ||
-      message.includes("depth")
-    ) {
-      responseText =
-        "📊 Here are the temperature and salinity profiles with depth. Loading visualization...";
-      componentToRender = "profile_plots";
-    } else if (
-      message.includes("map") ||
-      message.includes("location") ||
-      message.includes("float") ||
-      message.includes("position")
-    ) {
-      responseText = "🗺️ Displaying float locations on the map...";
-      componentToRender = "float_map";
-    } else if (
-      message.includes("summary") ||
-      message.includes("data") ||
-      message.includes("overview")
-    ) {
-      responseText =
-        "📈 At present, we are tracking ARGO floats and collecting profiles. Preparing summary...";
-    } else {
-      responseText =
-        "🌊 I'd be happy to help you explore ARGO float data! \n\nTry asking about:\n• **3D visualizations**\n• **Profiles**\n• **Float maps**\n• **Summaries**";
-    }
-
-    // Step 1: Push bot text reply
-    const textReply = {
-      id: Date.now() + 1,
-      type: "bot",
-      content: responseText,
-      responseType: "text",
+    const userMessage = {
+      id: Date.now(),
+      type: "user",
+      content: textToSend,
       timestamp: new Date().toISOString(),
     };
 
-    setMessages((prev) => [...prev, textReply]);
-    setIsLoading(false);
+    setMessages((prev) => [...prev, userMessage]);
+    setInputMessage("");
+    setIsLoading(true);
 
-    // Step 2: If a component is needed, add it with delay
-    if (componentToRender) {
-      setIsLoading(true);
-      setTimeout(() => {
-        const componentReply = {
-          id: Date.now() + 2,
-          type: "bot",
-          content: "", // no text, just the graph
-          responseType: "component",
-          component: componentToRender,
-          timestamp: new Date().toISOString(),
-        };
+    // Simulate API delay
+    setTimeout(() => {
+      let responseText = "";
+      let componentToRender = null;
 
-        setMessages((prev) => [...prev, componentReply]);
-        setIsLoading(false);
-      }, 2500); // 1.5s delay before showing graph
-    }
-  }, Math.random() * 1000 + 800);
-};
+      const message = textToSend.toLowerCase();
+
+      if (
+        message.includes("3d") ||
+        message.includes("three") ||
+        message.includes("visualization") ||
+        message.includes("globe")
+      ) {
+        responseText =
+          "🌐 This interactive 3D visualization presents ARGO float data. Let me generate the chart for you...";
+        componentToRender = "3d_visualization";
+      } else if (
+        message.includes("profile") ||
+        message.includes("temperature") ||
+        message.includes("salinity") ||
+        message.includes("depth")
+      ) {
+        responseText =
+          "📊 Here are the temperature and salinity profiles with depth. Loading visualization...";
+        componentToRender = "profile_plots";
+      } else if (
+        message.includes("map") ||
+        message.includes("location") ||
+        message.includes("float") ||
+        message.includes("position")
+      ) {
+        responseText = "🗺️ Displaying float locations on the map...";
+        componentToRender = "float_map";
+      } else if (
+        message.includes("summary") ||
+        message.includes("data") ||
+        message.includes("overview")
+      ) {
+        responseText =
+          "📈 At present, we are tracking ARGO floats and collecting profiles. Preparing summary...";
+      } else {
+        responseText =
+          "🌊 I'd be happy to help you explore ARGO float data! \n\nTry asking about:\n• **3D visualizations**\n• **Profiles**\n• **Float maps**\n• **Summaries**";
+      }
+
+      // Step 1: Push bot text reply
+      const textReply = {
+        id: Date.now() + 1,
+        type: "bot",
+        content: responseText,
+        responseType: "text",
+        timestamp: new Date().toISOString(),
+      };
+
+      setMessages((prev) => [...prev, textReply]);
+      setIsLoading(false);
+
+      // Step 2: If a component is needed, add it with delay
+      if (componentToRender) {
+        setIsLoading(true);
+        setTimeout(() => {
+          const componentReply = {
+            id: Date.now() + 2,
+            type: "bot",
+            content: "", // no text, just the graph
+            responseType: "component",
+            component: componentToRender,
+            timestamp: new Date().toISOString(),
+          };
+
+          setMessages((prev) => [...prev, componentReply]);
+          setIsLoading(false);
+        }, 2500); // 2.5s delay before showing graph
+      }
+    }, Math.random() * 1000 + 800);
+  };
 
   // Handle quick action clicks
   const handleQuickAction = (query) => {
@@ -183,34 +198,13 @@ const handleSendMessage = async (messageText = inputMessage) => {
 
   return (
     <div className="flex flex-col h-screen max-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-      {/* Header */}
-      
-      <div className="bg-white border-b bg-[#3f2b96] border-gray-400 shadow-sm px-6 py-[1.7rem]">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            
-           <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
-            <img 
-              src="https://as1.ftcdn.net/jpg/03/10/42/46/1000_F_310424659_USd3Coot4FUrJivOmDhCA5g0vNk3CVUW.jpg" 
-              alt="Ocean Logo" 
-              className="w-full h-full object-cover"
-            />
-          </div>
 
-
-            <div>
-              <h1 className="text-xl font-bold text-gray-800">ARGO Data Assistant</h1>
-              <p className="text-sm text-gray-600">Explore oceanographic data with AI</p>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
+      <Header/>
+    
       {/* Quick Actions - Show when no messages or few messages */}
       {messages.length <= 1 && (
         <div className="px-6 py-4 bg-white border-b border-gray-100">
-          <p className="text-sm text-gray-600 mb-3">Top :</p>
+          <p className="text-sm text-gray-600 mb-3">Quick Actions:</p>
           <div className="flex flex-wrap gap-2">
             {quickActions.map((action, idx) => (
               <button
@@ -241,7 +235,11 @@ const handleSendMessage = async (messageText = inputMessage) => {
               <div className="flex items-start space-x-3 max-w-4xl">
                 {message.type === 'bot' && (
                   <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <Bot className="w-5 h-5 text-white" />
+                     <img 
+                        src="https://as1.ftcdn.net/jpg/03/10/42/46/1000_F_310424659_USd3Coot4FUrJivOmDhCA5g0vNk3CVUW.jpg" 
+                        alt="Ocean Logo" 
+                        className="w-full h-full object-cover rounded-full"
+                      />
                   </div>
                 )}
 
@@ -262,8 +260,6 @@ const handleSendMessage = async (messageText = inputMessage) => {
                       {renderComponent(message.component)}
                     </div>
                   )}
-
-                 
                 </div>
 
                 {message.type === 'user' && (
@@ -279,7 +275,7 @@ const handleSendMessage = async (messageText = inputMessage) => {
             <div className="flex justify-start animate-fadeIn">
               <div className="flex items-start space-x-3 max-w-4xl">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Bot className="w-5 h-5 text-white" />
+                  {/* <Bot className="w-5 h-5 text-white" /> */}
                 </div>
                 <div className="bg-white rounded-2xl px-4 py-3 shadow-md border border-gray-100">
                   <div className="flex items-center space-x-2">
@@ -299,70 +295,67 @@ const handleSendMessage = async (messageText = inputMessage) => {
 
       {/* Input Area */}
       <div className="bg-white border-t border-gray-200 px-6 py-4">
+        <div className="flex items-center space-x-3">
+          <div className="flex-1 relative">
+            <select
+              value={selectedLang}
+              onChange={(e) => setSelectedLang(e.target.value)}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 
+                        text-white text-sm 
+                        bg-gray-600 border border-gray-400 
+                        py-1 px-2 rounded-full
+                        focus:outline-none focus:ring-2 focus:ring-white focus:border-green-500 
+                        hover:bg-gray-400 transition-all duration-200 cursor-pointer"
+            >
+              <option value="en-US">EN</option>
+              <option value="hi-IN">हिंदी</option>
+              <option value="es-ES">ES</option>
+              <option value="fr-FR">FR</option>
+              <option value="zh-CN">中文</option>
+            </select>
 
+            <input
+              type="text"
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+              placeholder={listening ? "🎙️ Listening... Speak now!" : "Ask about ARGO data visualizations, profiles, or locations..."}
+              className={`w-full border rounded-full pl-16 pr-24 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ${
+                listening 
+                  ? 'border-red-300 bg-red-50 placeholder-red-600' 
+                  : 'border-gray-300'
+              }`}
+              disabled={isLoading}
+            />
 
-       <div className="flex items-center space-x-3">
-      <div className="flex-1 relative">
+            {/* 🎙️ Voice button with enhanced visual feedback */}
+            <button
+              onClick={handleVoiceInput}
+              className={`absolute right-12 top-1/2 transform -translate-y-1/2 p-2 rounded-full transition-all duration-200 ${
+                listening 
+                  ? "bg-red-500 text-white animate-pulse shadow-lg shadow-red-200" 
+                  : "bg-gray-200 hover:bg-gray-300 text-gray-600"
+              }`}
+              disabled={isLoading}
+              title={listening ? "Stop recording (message will auto-send)" : "Start voice recording"}
+            >
+              <Mic className={`w-4 h-4 ${listening ? 'animate-bounce' : ''}`} />
+            </button>
 
-        {/* 🌍 Language selector */}
-   
-          <select
-  value={selectedLang}
-  onChange={(e) => setSelectedLang(e.target.value)}
-  className="absolute left-3 top-1/2 transform -translate-y-1/2 
-             text-white text-sm 
-             bg-gray-600 border border-gray-400 
-             py-1 rounded-full
-             focus:outline-none focus:ring-2 focus:ring-white focus:border-green-500 
-             hover:bg-gray-400 transition-all duration-200 cursor-pointer"
->
-        <option value="en-US">EN</option>
-        <option value="hi-IN">हिंदी</option>
-        <option value="es-ES">ES</option>
-        <option value="fr-FR">FR</option>
-        <option value="zh-CN">中文</option>
-      </select>
-
-
-
-        {/* ✍️ Input box */}
-        <input
-          type="text"
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSendMessage();
-            }
-          }}
-          placeholder="Ask about ARGO data visualizations, profiles, or locations..."
-          className="w-full border border-gray-300 rounded-full pl-16 pr-24 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-          disabled={isLoading}
-        />
-
-        {/* 🎙️ Voice button */}
-        <button
-          onClick={handleVoiceInput}
-          className={`absolute right-12 top-1/2 transform -translate-y-1/2 p-2 rounded-full transition-all duration-200 ${
-            listening ? "bg-red-500 text-white" : "bg-gray-200 hover:bg-gray-300"
-          }`}
-        >
-          <Mic className="w-4 h-4" />
-        </button>
-
-        {/* 📩 Send button */}
-        <button
-          onClick={handleSendMessage}
-          disabled={isLoading || !inputMessage.trim()}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-2 rounded-full hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
-        >
-          <Send className="w-4 h-4" />
-        </button>
-      </div>
-    </div>
-  
-
+            <button
+              onClick={() => handleSendMessage()}
+              disabled={isLoading || !inputMessage.trim() || listening}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-2 rounded-full hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </div>
 
     </div>
