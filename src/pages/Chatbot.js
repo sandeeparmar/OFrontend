@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, MapPin, BarChart3, Globe, Thermometer } from 'lucide-react';
 import { Mic } from "lucide-react";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI} from '@google/genai';
 import ThreeDVisualization from '../components/Dashboard/ThreeDVisualization.js';
 import ProfilePlots from '../components/Dashboard/ProfilePlots.js';
 import ArgoFloatMap from '../components/Dashboard/ArgoFloatMap.js';
@@ -19,7 +19,7 @@ const Chatbot = () => {
   const [selectedLang, setSelectedLang] = useState("en-US");
 
   // Initialize Google GenAI
-  const ai = new GoogleGenerativeAI(process.env.REACT_APP_GOOGLE_API_KEY);
+  const ai = new GoogleGenAI({ apiKey: 'AIzaSyB-J5Hmifh6VAculo2LhWWHCTetdl1dnso'});
 
 
   // System prompt for Gemini with data generation instructions
@@ -258,8 +258,7 @@ Remember to always respond in the specified JSON format with engaging, education
     }
   };
 
-  // Handle messages
-  const handleSendMessage = async (messageText = inputMessage) => {
+const handleSendMessage = async (messageText = inputMessage) => {
     if (!messageText.trim()) return;
 
     const userMessage = {
@@ -275,13 +274,14 @@ Remember to always respond in the specified JSON format with engaging, education
     setStreamingComplete(false);
 
     try {
+      // Get response from Gemini
       const geminiResponse = await getGeminiResponse(messageText);
-
+      
       const botMessageId = Date.now() + 1;
       const botMessage = {
         id: botMessageId,
         type: 'bot',
-        content: '',
+        content: '', // Start with empty content for streaming
         responseType: geminiResponse.responseType,
         component: geminiResponse.componentToRender,
         data: geminiResponse.data || null,
@@ -291,26 +291,32 @@ Remember to always respond in the specified JSON format with engaging, education
 
       setMessages(prev => [...prev, botMessage]);
       setStreamingMessageId(botMessageId);
-
+      
+      // Stream the text response word by word
       streamText(geminiResponse.responseText, botMessageId);
+      
     } catch (error) {
       console.error("Error handling message:", error);
+      
+      // Fallback response
       const botMessage = {
         id: Date.now() + 1,
         type: 'bot',
-        content: '🌊 I\'d be happy to help you explore ARGO float data!...',
+        content: '🌊 I\'d be happy to help you explore ARGO float data! \n\nTry asking about:\n• *3D visualizations* of ocean data\n• *Temperature and salinity profiles\n• **Float locations* on the map\n• *Data summaries* and analysis\n\nWhat interests you most?',
         timestamp: new Date().toISOString(),
         responseType: 'text',
         component: null,
         data: null,
         isStreamingComplete: true
       };
+      
       setMessages(prev => [...prev, botMessage]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Handle quick action clicks
   const handleQuickAction = (query) => {
     handleSendMessage(query);
   };
