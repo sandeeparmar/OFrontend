@@ -4,7 +4,6 @@ import {  Thermometer, Waves , Play, Pause, Settings, Eye, Target   } from 'luci
 const OceanTemperatureVisualization = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null) ;
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [animationSpeed, setAnimationSpeed] = useState(50);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -24,12 +23,11 @@ const OceanTemperatureVisualization = () => {
     try {
       setLoading(true);
       // Simulating API call - in real scenario you'd fetch from actual endpoint
+      
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate loading
       createSampleData();
-      setError(null);
     } catch (err) {
       console.error('Error fetching data:', err);
-      setError(`Failed to fetch ocean temperature data: ${err.message}`);
       createSampleData();
     } finally {
       setLoading(false);

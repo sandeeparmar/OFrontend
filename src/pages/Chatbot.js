@@ -130,6 +130,7 @@ If you cannot process a request, still return valid JSON like:
 
 Remember to always respond in the specified JSON format with engaging, educational content about oceanography. you always have to send json only and even if any vague query you have to answer always and always in json in responseText whatever you want to say if you don't get context ask user to clearify it in {"responseText": } only with clear things you never and never have to reply in a normal text like "yes this and that" you always strictly reply in json in above format and your concern in responseText otherwise our site will be crashed`;
 
+ // 🎙 Speech recognition
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
   const handleVoiceInput = () => {

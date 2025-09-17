@@ -35,6 +35,8 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-teal-50 to-cyan-100 py-12 px-4 sm:px-6 lg:px-8">
+     
+     
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
@@ -119,27 +121,6 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-ocean-medium focus:ring-ocean-medium border-gray-300 rounded"
-                />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                  Remember me
-                </label>
-              </div>
-              <Link
-                to="/forgot-password"
-                className="text-sm text-ocean-medium hover:text-ocean-dark transition-colors"
-              >
-                Forgot password?
-              </Link>
-            </div>
-
             {/* Submit Button */}
             <button
               type="submit"
@@ -168,21 +149,8 @@ const Login = () => {
                 </Link>
               </p>
             </div>
+            
           </form>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center">
-          <p className="text-xs text-gray-500">
-            By signing in, you agree to our{' '}
-            <Link to="/terms" className="text-ocean-medium hover:text-ocean-dark">
-              Terms of Service
-            </Link>{' '}
-            and{' '}
-            <Link to="/privacy" className="text-ocean-medium hover:text-ocean-dark">
-              Privacy Policy
-            </Link>
-          </p>
         </div>
       </div>
     </div>
