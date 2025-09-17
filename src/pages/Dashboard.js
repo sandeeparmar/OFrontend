@@ -1,203 +1,189 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { MapPin, Thermometer, Droplet, BarChart3, Globe, Waves } from 'lucide-react';
 import ArgoFloatMap from "../components/Dashboard/ArgoFloatMap";
 import FloatList from "../components/Dashboard/FloatList";
 import DataVisualization from "../components/Dashboard/DataVisualization";
 import { argoFloats } from "../data/argoFloats";
 import { handleFloatSelect } from "../components/Dashboard/ArgoFloatData";
-
 const Dashboard = () => {
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [argoData, setArgoData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [viewMode, setViewMode] = useState('map');
-  const [threeDView, setThreeDView] = useState(false);
-
-  return (
-    <div className="h-full  flex flex-col bg-gray-50">
-
-        <div className="fixed top-0 w-full flex  items-center justify-center h-[6.5rem]  py-7 bg-gradient-to-r from-[#536976] to-[#BBD2C5]  shadow-lg border-b-4 border-blue-800 text-black gap-2 z-50 ">
-       
-        <div className="flex items-center gap-3 ">
-          <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
-            <img 
-              src="https://as1.ftcdn.net/jpg/03/10/42/46/1000_F_310424659_USd3Coot4FUrJivOmDhCA5g0vNk3CVUW.jpg" 
-              alt="Ocean Logo" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-
-        <div className="p-6 ">
-         <h1 className="text-2xl font-bold text-white ">ARGO Float Data</h1>
-        </div>
-
-      </div>
-       
-
-      
-      <div className="mt-28 mb-7 flex  gap-3 right-0 px-5">
-        <button
-          onClick={() => setViewMode('map')}
-          className={`px-2 py-1.5 xs:px-3 xs:py-2 sm:px-4 sm:py-2 md:px-5 md:py-2.5 
-                     text-xs xs:text-sm sm:text-base md:text-lg rounded-lg transition-all 
-                     duration-200 ease-in-out transform hover:scale-105 active:scale-95 ${
-            viewMode === 'map' 
-              ? 'bg-blue-600 text-white shadow-md' 
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
-          }`}
-        >
-          <span className="hidden xs:inline">Float </span>Locations
-        </button>
-        
-        <button
-          onClick={() => setViewMode('data')}
-          className={`px-2 py-1.5 xs:px-3 xs:py-2 sm:px-4 sm:py-2 md:px-5 md:py-2.5 
-                     text-xs xs:text-sm sm:text-base md:text-lg rounded-lg transition-all 
-                     duration-200 ease-in-out transform hover:scale-105 active:scale-95 ${
-            viewMode === 'data' 
-              ? 'bg-blue-600 text-white shadow-md' 
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
-          }`}
-        >
-          <span className="hidden xs:inline">Data </span>Visualization
-        </button>
-        
-        {viewMode === 'data' && (
-          <button
-            onClick={() => setThreeDView(!threeDView)}
-            className={`px-2 py-1.5 xs:px-3 xs:py-2 sm:px-4 sm:py-2 md:px-5 md:py-2.5 
-                       text-xs xs:text-sm sm:text-base md:text-lg rounded-lg transition-all 
-                       duration-200 ease-in-out transform hover:scale-105 active:scale-95 ${
-              threeDView
-                ? 'bg-purple-600 text-white shadow-md' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
-            }`}
-          >
-            {threeDView ? '2D View' : '3D View'}
-          </button>
-        )}
-      </div>
-
-    
-      {viewMode === 'map' && (
-        <div className="bg-white rounded-lg shadow p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6 mb-3 xs:mb-4 sm:mb-5 md:mb-6">
-          <h2 className="text-lg font-semibold  mb-3 text-blue-900">
-            ARGO Float Locations
-          </h2>
-          
-          <div className="h-64 xs:h-72 sm:h-80 md:h-96 lg:h-[450px] xl:h-[500px] mb-3 xs:mb-4">
-            <ArgoFloatMap 
-              argoFloats={argoFloats} 
-              handleFloatSelect={(float) => handleFloatSelect(
-                float, 
-                setSelectedLocation, 
-                setArgoData, 
-                setLoading
-              )} 
-            />
-          </div>
-          
-          <FloatList 
-            argoFloats={argoFloats}
-            selectedLocation={selectedLocation}
-            handleFloatSelect={(float) => handleFloatSelect(
-              float, 
-              setSelectedLocation, 
-              setArgoData, 
-              setLoading
-            )}
-          />
-        </div>
-      )}
-
-      {/* Data Visualization View */}
-      {selectedLocation && viewMode === 'data' && (
-        <div className="space-y-3 mt-4 mx-2  xs:space-y-4 sm:space-y-5 md:space-y-6">
-          <div className="bg-white border-2 border-green-400  p-2 xs:p-3 sm:p-4 md:p-5 rounded-lg shadow">
-            <h2 className="text-base xs:text-lg sm:text-xl md:text-2xl font-semibold mb-1 xs:mb-2">
-              Float  Point {selectedLocation.platform_number}
-            </h2>
-            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-1 xs:gap-2 text-xs xs:text-sm sm:text-base text-gray-600">
-              <p>📍 {selectedLocation.latitude}°N, {selectedLocation.longitude}°E</p>
-              <p>📅 {selectedLocation.last_measurement}</p>
-              <p>🔧 {selectedLocation.data_mode} | {selectedLocation.measurements} measurements</p>
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="flex justify-center items-center h-40 xs:h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80">
-              <div className="animate-spin rounded-full h-8 w-8 xs:h-10 xs:w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 border-t-2 border-b-2 border-blue-600"></div>
-              <span className="ml-3 text-sm xs:text-base sm:text-lg text-gray-600">Loading data...</span>
-            </div>
-          ) : argoData.length > 0 ? (
-            <DataVisualization 
-              argoData={argoData} 
-              threeDView={threeDView} 
-            />
-          ) : (
-            <div className="bg-white p-4 rounded-lg shadow text-center">
-              <p className="text-gray-500 text-sm xs:text-base">No data available for this float</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* No Float Selected Message */}
-      {!selectedLocation && viewMode === 'data' && (
-        <div className="bg-white rounded-lg shadow p-3 xs:p-4 sm:p-5 md:p-6 text-center flex flex-col items-center justify-center min-h-[200px] xs:min-h-[250px] sm:min-h-[300px]">
-          <div className="text-4xl xs:text-5xl sm:text-6xl mb-3 xs:mb-4">🌊</div>
-          <p className="text-sm xs:text-base sm:text-lg text-gray-600 mb-2 xs:mb-3">
-            Select an ARGO float to view data
-          </p>
-          <p className="text-xs xs:text-sm text-gray-500">
-            Switch to Map view and click on a float marker
-          </p>
-        </div>
-      )}
-
-        {/* Data View */}
-        {/* {viewMode === "data" && (
-          <>
-            {selectedLocation ? (
-              <section className="space-y-6">
-                <div className="bg-white p-6 rounded-xl shadow">
-                  <h2 className="text-lg font-semibold mb-2">
-                    Data for Float {selectedLocation.platform_number}
-                  </h2>
-                  <p className="text-sm text-gray-600">
-                    Location: {selectedLocation.latitude}°N,{" "}
-                    {selectedLocation.longitude}°E | Last Update:{" "}
-                    {selectedLocation.last_measurement} | Mode:{" "}
-                    {selectedLocation.data_mode}
-                  </p>
+    const [selectedLocation, setSelectedLocation] = useState(null);
+    const [argoData, setArgoData] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [viewMode, setViewMode] = useState('map');
+    const [threeDView, setThreeDView] = useState(false);
+    const [plotMode, setPlotMode] = useState(null);
+    const renderDataVisualization = () => {
+        if (loading) {
+            return (
+                <div className="flex justify-center items-center h-40 xs:h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80">
+                    <div className="animate-spin rounded-full h-8 w-8 xs:h-10 xs:w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 border-t-2 border-b-2 border-blue-600"></div>
+                    <span className="ml-3 text-sm xs:text-base sm:text-lg text-gray-600">Loading data...</span>
                 </div>
-
-                {loading ? (
-                  <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+            );
+        }
+        if (argoData.length > 0) {
+            return (
+                <DataVisualization
+                    argoData={argoData}
+                    threeDView={threeDView}
+                    plotMode={plotMode}
+                />
+            );
+        }
+        return (
+            <div className="bg-white p-4 rounded-lg shadow text-center">
+                <p className="text-gray-500 text-sm xs:text-base">No data available for this float</p>
+            </div>
+        );
+    };
+    return (
+        <div className="h-full flex flex-col bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+            <div className="fixed top-0 w-full flex items-center justify-center h-[6.5rem] py-7 bg-gradient-to-r from-blue-800 to-blue-500 shadow-lg text-white gap-2 z-50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
+                    <img 
+                      src="https://as1.ftcdn.net/jpg/03/10/42/46/1000_F_310424659_USd3Coot4FUrJivOmDhCA5g0vNk3CVUW.jpg" 
+                      alt="Ocean Logo" 
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                ) : argoData.length > 0 ? (
-                  <DataVisualization argoData={argoData} threeDView={threeDView} />
-                ) : (
-                  <div className="bg-white p-6 rounded-xl shadow text-center">
-                    <p className="text-gray-500">No data available for this float</p>
-                  </div>
+                </div>
+                <div className="p-6">
+                    <h1 className="text-xl md:text-2xl font-extrabold tracking-wide drop-shadow-sm">
+                        ARGO Float Data
+                    </h1>
+                    <p className="text-sm md:text-base font-light opacity-90 drop-shadow-sm">
+                        AI-Powered Ocean Data
+                    </p>
+                </div>
+            </div>
+            <div className="mt-28 mb-7 flex gap-3 justify-center px-5">
+                <button
+                    onClick={() => setViewMode('map')}
+                    className={`flex items-center space-x-2 px-5 py-3 rounded-full transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 ${
+                        viewMode === 'map'
+                            ? 'bg-blue-600 text-white shadow-md'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
+                    }`}
+                >
+                    <MapPin className="w-5 h-5" />
+                    <span className="text-sm xs:text-base">Float Locations</span>
+                </button>
+                <button
+                    onClick={() => setViewMode('data')}
+                    className={`flex items-center space-x-2 px-5 py-3 rounded-full transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 ${
+                        viewMode === 'data'
+                            ? 'bg-blue-600 text-white shadow-md'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
+                    }`}
+                >
+                    <BarChart3 className="w-5 h-5" />
+                    <span className="text-sm xs:text-base">Data Visualization</span>
+                </button>
+                {viewMode === 'data' && (
+                    <button
+                        onClick={() => setThreeDView(!threeDView)}
+                        className={`flex items-center space-x-2 px-5 py-3 rounded-full transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 ${
+                            threeDView
+                                ? 'bg-purple-600 text-white shadow-md'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
+                        }`}
+                    >
+                        <Globe className="w-5 h-5" />
+                        <span className="text-sm xs:text-base">
+                            {threeDView ? '2D View' : '3D View'}
+                        </span>
+                    </button>
                 )}
-              </section>
-            ) : (
-              <div className="bg-white rounded-xl shadow p-6 text-center">
-                <p className="text-gray-500">
-                  Select an ARGO float from the map view to see its data
-                </p>
-              </div>
+            </div>
+            {viewMode === 'map' && (
+                <div className="p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6 mb-3 xs:mb-4 sm:mb-5 md:mb-6">
+                    <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+                        <h2 className="text-lg font-semibold mb-3 p-4 bg-gray-50 text-blue-900 border-b">
+                            ARGO Float Locations
+                        </h2>
+                        <div className="h-64 xs:h-72 sm:h-80 md:h-96 lg:h-[450px] xl:h-[500px] mb-3 xs:mb-4">
+                            <ArgoFloatMap
+                                argoFloats={argoFloats}
+                                handleFloatSelect={(float) => handleFloatSelect(
+                                    float,
+                                    setSelectedLocation,
+                                    setArgoData,
+                                    setLoading
+                                )}
+                            />
+                        </div>
+                        <div className="p-4">
+                            <FloatList
+                                argoFloats={argoFloats}
+                                selectedLocation={selectedLocation}
+                                handleFloatSelect={(float) => handleFloatSelect(
+                                    float,
+                                    setSelectedLocation,
+                                    setArgoData,
+                                    setLoading
+                                )}
+                            />
+                        </div>
+                    </div>
+                </div>
             )}
-          </>
-        )}
-       */}
-    
-
-    </div>
-  );
+            {selectedLocation && viewMode === 'data' && (
+                <div className="space-y-4 p-5">
+                    <div className="bg-white rounded-xl shadow-lg p-5">
+                        <h2 className="text-2xl font-bold text-blue-800 mb-1">
+                            Float ID: {selectedLocation.platform_number}
+                        </h2>
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600">
+                            <p className="flex items-center gap-2"><MapPin className="w-4 h-4 text-blue-500" /> {selectedLocation.latitude}°N, {selectedLocation.longitude}°E</p>
+                            <p className="flex items-center gap-2"><Waves className="w-4 h-4 text-blue-500" /> {selectedLocation.data_mode}</p>
+                            <p className="flex items-center gap-2"><BarChart3 className="w-4 h-4 text-blue-500" /> {selectedLocation.measurements} measurements</p>
+                        </div>
+                        <div className="mt-6 flex flex-wrap gap-4 justify-center">
+                            <button
+                                onClick={() => setPlotMode('temperature')}
+                                className={`flex items-center gap-2 px-5 py-3 rounded-full transition-all duration-300 ease-in-out transform hover:scale-105 ${
+                                    plotMode === 'temperature' ? 'bg-orange-500 text-white shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-orange-100'
+                                }`}
+                            >
+                                <Thermometer className="w-5 h-5" />
+                                <span>Temperature</span>
+                            </button>
+                            <button
+                                onClick={() => setPlotMode('salinity')}
+                                className={`flex items-center gap-2 px-5 py-3 rounded-full transition-all duration-300 ease-in-out transform hover:scale-105 ${
+                                    plotMode === 'salinity' ? 'bg-teal-500 text-white shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-teal-100'
+                                }`}
+                            >
+                                <Droplet className="w-5 h-5" />
+                                <span>Salinity</span>
+                            </button>
+                            <button
+                                onClick={() => setPlotMode('all')}
+                                className={`flex items-center gap-2 px-5 py-3 rounded-full transition-all duration-300 ease-in-out transform hover:scale-105 ${
+                                    plotMode === 'all' ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-blue-100'
+                                }`}
+                            >
+                                <BarChart3 className="w-5 h-5" />
+                                <span>All Plots</span>
+                            </button>
+                        </div>
+                    </div>
+                    {renderDataVisualization()}
+                </div>
+            )}
+            {!selectedLocation && viewMode === 'data' && (
+                <div className="bg-white rounded-lg shadow-xl p-6 text-center mx-5 my-auto flex flex-col items-center justify-center min-h-[250px]">
+                    <div className="text-6xl mb-4 animate-pulse">🌊</div>
+                    <h2 className="text-xl font-semibold text-gray-700 mb-2">
+                        Select an ARGO Float to View Data
+                    </h2>
+                    <p className="text-sm text-gray-500">
+                        Switch to Map view and click on a float marker
+                    </p>
+                </div>
+            )}
+        </div>
+    );
 };
-
 export default Dashboard;

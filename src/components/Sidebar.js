@@ -19,7 +19,7 @@ const Sidebar = () => {
   return (
     <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
 
-      <div className="flex top-0 items-center justify-center h-[6.5rem] px-7 py-[6.5] bg-gradient-to-r from-[#536976] to-[#BBD2C5]  shadow-lg border-b-4 border-blue-800 text-black">
+      <div className="flex top-0 items-center justify-center h-[6.5rem] px-7 py-7 bg-gradient-to-r from-blue-800 to-blue-500 shadow-lg text-white gap-2 z-50">
        
         <div className="flex items-center gap-3">
           <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
@@ -29,6 +29,7 @@ const Sidebar = () => {
               className="w-full h-full object-cover"
             />
           </div>
+           <h1 className="text-2xl font-bold">Floatchat</h1>
         </div>
 
       </div>
@@ -69,7 +70,7 @@ const Sidebar = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-900">{user?.username}</p>
-              <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+              <p className="text-sm text-gray-500 capitalize">{user?.role}</p>
             </div>
           </div>
           <button

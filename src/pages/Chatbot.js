@@ -318,16 +318,16 @@ Remember to always respond in the specified JSON format with engaging, education
   return (
     <div className="flex flex-col h-screen max-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
       {/* Header */}
-      <div className="bg-white border-b bg-[#3f2b96] border-gray-400 shadow-sm px-6 py-[1.7rem]">
+      <div className="bg-white border-b py-6 bg-gradient-to-r from-blue-800 to-blue-500 shadow-lg text-white gap-2 z-50 px-6 py-[1.7rem]">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center">
+          <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
             <img src="https://as1.ftcdn.net/jpg/03/10/42/46/1000_F_310424659_USd3Coot4FUrJivOmDhCA5g0vNk3CVUW.jpg"
                  alt="Ocean Logo"
                  className="w-full h-full object-cover"/>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-800">ARGO Data Assistant</h1>
-            <p className="text-sm text-gray-600">Explore oceanographic data with AI</p>
+            <h1 className="text-xl md:text-2xl font-extrabold tracking-wide drop-shadow-sm">ARGO Data Assistant</h1>
+            <p className="text-sm md:text-base font-light opacity-90 drop-shadow-sm">Explore oceanographic data with AI</p>
           </div>
         </div>
       </div>
@@ -335,7 +335,7 @@ Remember to always respond in the specified JSON format with engaging, education
       {/* Quick actions */}
       {messages.length <= 1 && (
         <div className="px-6 py-4 bg-white border-b border-gray-100">
-          <p className="text-sm text-gray-600 mb-3">Top :</p>
+          <p className="text-ocean-medium text-gray-600 mb-3">Top :</p>
           <div className="flex flex-wrap gap-2">
             {quickActions.map((action, idx) => (
               <button key={idx}
@@ -377,7 +377,7 @@ Remember to always respond in the specified JSON format with engaging, education
                   )}
 
                   {/* ✅ Fixed template literal here */}
-                  <div className={`text-xs mt-2 ${message.type === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
+                  <div className={`text-sm mt-2 ${message.type === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
                     {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
@@ -453,7 +453,7 @@ Remember to always respond in the specified JSON format with engaging, education
             <button onClick={handleSendMessage}
                     disabled={isLoading || !inputMessage.trim() || streamingMessageId !== null}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-2 rounded-full">
-              <Send className="w-4 h-4"/>
+              <Send className="w-5 h-5"/>
             </button>
           </div>
         </div>

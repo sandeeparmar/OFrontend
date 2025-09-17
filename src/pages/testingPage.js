@@ -304,7 +304,7 @@ const OceanTemperatureVisualization = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center">
         <div className="text-center text-white">
           
            <div className="h-12 bg-gray-200 border-1 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg  cursor-pointer">
@@ -323,7 +323,7 @@ const OceanTemperatureVisualization = () => {
           <div className="text-white">Preparing interactive visualization</div>
           <div className="mt-4 w-48 bg-gray-700 rounded-full h-2 mx-auto">
             <div 
-              className="h-2 rounded-full animate-pulse transition-all duration-1000" 
+              className="h-20 rounded-full animate-pulse transition-all duration-1000" 
               style={{backgroundColor: '#536976', width: '70%'}}
             ></div>
           </div>
@@ -336,12 +336,12 @@ const OceanTemperatureVisualization = () => {
     <div className=" bg-[#BBD2C5] text-white ">
      
      
-      <div className="relative z-10 p-6 bg-black bg-opacity-60 backdrop-blur-md">
+      <div className="relative  p-5 bg-gradient-to-r from-blue-800 to-blue-500 shadow-lg text-white ">
        
           {/* Modern Header */}
         <div className="flex items-center mb-4 justify-between">
           <div className="flex items-center space-x-4">
-            <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
+            <div className="w-10 h-18 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
             <img 
               src="https://as1.ftcdn.net/jpg/03/10/42/46/1000_F_310424659_USd3Coot4FUrJivOmDhCA5g0vNk3CVUW.jpg" 
               alt="Ocean Logo" 
@@ -357,11 +357,11 @@ const OceanTemperatureVisualization = () => {
           </div>
         </div>
 
-        <div className='mt-5 py-4 px-4 gap-4 border-2  rounded-full bg-[#12c2e9]'>
+        <div >
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setShowControls(!showControls)}
-              className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105"
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-100 hover:scale-105"
               style={{backgroundColor: showControls ? '#536976' : 'rgba(83, 105, 118, 0.3)'}}
             >
               <Settings className="w-4 h-4" />
@@ -389,7 +389,7 @@ const OceanTemperatureVisualization = () => {
 
         {/* Advanced Controls Panel */}
         {showControls && (
-          <div className="mt-6 p-4 bg-black bg-opacity-40 rounded-lg border" style={{borderColor: '#536976'}}>
+          <div className="mt-6 p-4bg-gradient-to-br from-blue-50 via-white to-cyan-50 rounded-lg border" style={{borderColor: '#536976'}}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* View Mode */}
               <div>
@@ -482,11 +482,11 @@ const OceanTemperatureVisualization = () => {
       </div>
 
       {/* Main Visualization */}
-      <div className="relative flex-1 mt-4 ">
+      <div className="relative flex-1 mt-8 ">
         
         <canvas
           ref={canvasRef}
-          width={window.innerWidth || 1200}
+          width={window.innerWidth|| 1200}
           height={(window.innerHeight || 1200) - (showControls ? 300 : 200)}
           onClick={handleCanvasClick}
           onMouseMove={handleCanvasMouseMove}
