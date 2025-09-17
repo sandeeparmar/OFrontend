@@ -41,7 +41,7 @@ const Sidebar = () => {
               to={item.href}
               className={`flex items-center text-gray-700 text-xl 
              font-semibold mb-2 xs:mb-3 sm:mb-4  
-             text-black cursor-pointer hover:text-green-500 
+             cursor-pointer hover:text-green-500 
              hover:bg-green-50 px-2 py-1 rounded-lg 
              transition-all duration-300 hover:scale-105 origin-left  ${
                 location.pathname === item.href ? 'bg-ocean-light text-ocean-dark font-medium' : ''
