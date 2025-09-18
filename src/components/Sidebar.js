@@ -36,7 +36,7 @@ const Navbar = () => {
         {/* Logo and Title */}
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer transform rotate-12">
-            <OceanLogo />
+            <OceanLogo/>
           </div>
           <div className="text-white">
             <h1 className="text-xl md:text-2xl font-extrabold tracking-wide drop-shadow-md">FloatChat</h1>

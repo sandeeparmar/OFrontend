@@ -5,6 +5,7 @@ import FloatList from "../components/Dashboard/FloatList";
 import DataVisualization from "../components/Dashboard/DataVisualization";
 import { argoFloats } from "../data/argoFloats";
 import { handleFloatSelect } from "../components/Dashboard/ArgoFloatData";
+
 const Dashboard = () => {
     const [selectedLocation, setSelectedLocation] = useState(null);
     const [argoData, setArgoData] = useState([]);
@@ -37,7 +38,7 @@ const Dashboard = () => {
         );
     };
     return (
-        <div className="h-full flex flex-col bg-gradient-to-br from-blue-50 via-white to-cyan-50 mt-20" >
+        <div className="pb-4 flex flex-col bg-gradient-to-br from-gray-600  to-cyan-500 mt-20 border-3 " >
         
             <div className="flex m-3 p-3 gap-3 justify-center px-5 bg-gray-200 border-3 rounded-xl">
                 <button

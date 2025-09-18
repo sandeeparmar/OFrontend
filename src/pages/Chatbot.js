@@ -216,14 +216,14 @@ const handleSendMessage = async (messageText = inputMessage) => {
   return (
     <div className="flex flex-col mt-20  h-screen max-h-screen  bg-gray-300">
       {/* Quick actions */}
-      {messages.length <= 1 && (
-        <div className="px-6 py-4 bg-white border-b border-gray-100">
-          <p className="text-ocean-medium text-gray-600 mb-3">Top :</p>
+      {messages.length  && (
+        <div className="px-6 py-4 bg-[#2C5364] border-b-2 border-blue-600">
+          <p className="text-ocean-medium text-white mb-3">Top :</p>
           <div className="flex flex-wrap gap-2">
             {quickActions.map((action, idx) => (
               <button key={idx}
                       onClick={() => handleQuickAction(action.query)}
-                      className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-700 rounded-full text-sm transition-colors duration-200 group"
+                      className="flex items-center space-x-2 px-3 py-2 bg-white hover:bg-blue-100 text-gray-700 hover:text-blue-700 rounded-full text-sm transition-colors duration-200 group"
                       disabled={isLoading || streamingMessageId !== null}>
                 <action.icon className="w-4 h-4"/>
                 <span>{action.label}</span>

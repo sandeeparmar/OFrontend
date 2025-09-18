@@ -25,7 +25,7 @@ import ArgoMonitoringSystem from './pages/alertPage.js' ;
   }
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]
+    <div className="flex h-full  bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] pb-3
 ">
       {user && <Sidebar />}
       <div className={`flex-1 ${user ? 'mx-9' : ''}`}>
