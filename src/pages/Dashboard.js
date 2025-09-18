@@ -37,32 +37,14 @@ const Dashboard = () => {
         );
     };
     return (
-        <div className="h-full flex flex-col bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-            <div className="fixed top-0 w-full flex items-center justify-center h-[6.5rem] py-7 bg-gradient-to-r from-blue-800 to-blue-500 shadow-lg text-white gap-2 z-50">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-11 sm:w-12 sm:h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg overflow-hidden cursor-pointer">
-                    <img 
-                      src="https://as1.ftcdn.net/jpg/03/10/42/46/1000_F_310424659_USd3Coot4FUrJivOmDhCA5g0vNk3CVUW.jpg" 
-                      alt="Ocean Logo" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-                <div className="p-6">
-                    <h1 className="text-xl md:text-2xl font-extrabold tracking-wide drop-shadow-sm">
-                        ARGO Float Data
-                    </h1>
-                    <p className="text-sm md:text-base font-light opacity-90 drop-shadow-sm">
-                        AI-Powered Ocean Data
-                    </p>
-                </div>
-            </div>
-            <div className="mt-28 mb-7 flex gap-3 justify-center px-5">
+        <div className="h-full flex flex-col bg-gradient-to-br from-blue-50 via-white to-cyan-50 mt-20" >
+        
+            <div className="flex m-3 p-3 gap-3 justify-center px-5 bg-gray-200 border-3 rounded-xl">
                 <button
                     onClick={() => setViewMode('map')}
                     className={`flex items-center space-x-2 px-5 py-3 rounded-full transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 ${
                         viewMode === 'map'
-                            ? 'bg-blue-600 text-white shadow-md'
+                            ? 'bg-gradient-to-r from-cyan-500 to-violet-600 text-white shadow-lg shadow-violet-500/40'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
                     }`}
                 >

@@ -9,8 +9,10 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import OceanTemperatureVisualization from './pages/testingPage.js'
 import './App.css';
+import ArgoDataAnalyzer from './pages/analyseModel.js'  ;
+import ArgoMonitoringSystem from './pages/alertPage.js' ;
 
-function AppContent() {
+ function AppContent() {
   const { user, loading } = useAuth();
   
   if (loading) {
@@ -23,9 +25,10 @@ function AppContent() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]
+">
       {user && <Sidebar />}
-      <div className={`flex-1 ${user ? 'ml-64' : ''}`}>
+      <div className={`flex-1 ${user ? 'mx-9' : ''}`}>
         <Routes>
           <Route 
             path="/" 
@@ -54,6 +57,14 @@ function AppContent() {
           <Route 
             path="/testing" 
             element={user ? <OceanTemperatureVisualization /> : <Navigate to="/dashboard" />} 
+          />
+          <Route 
+            path="/analyse" 
+            element={user ? <ArgoDataAnalyzer /> : <Navigate to="/dashboard" />} 
+          />
+          <Route 
+            path="/alert" 
+            element={user ? <ArgoMonitoringSystem /> : <Navigate to="/dashboard" />} 
           />
         </Routes>
       </div>
