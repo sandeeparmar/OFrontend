@@ -329,7 +329,8 @@ const OceanDataExplorer = () => {
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-6">
           <h1 className="text-3xl font-bold text-slate-800 mb-2 flex items-center justify-center gap-2">
-            Argo Explorer 
+            <Map className="text-blue-600" size={32} />
+            Ocean Data Explorer
           </h1>
           <p className="text-slate-600">Explore oceanographic data by coordinates</p>
         </header>
