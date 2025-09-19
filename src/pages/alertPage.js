@@ -291,10 +291,10 @@ const ArgoMonitoringSystem = () => {
 
   const getSeverityColor = (severity) => {
     switch (severity) {
-      case 'critical': return 'text-red-600 bg-red-50 border-red-200';
-      case 'high': return 'text-orange-600 bg-orange-50 border-orange-200';
-      case 'medium': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      default: return 'text-blue-600 bg-blue-50 border-blue-200';
+      case 'critical': return 'text-red-300 bg-red-900/30 border-red-700';
+      case 'high': return 'text-orange-300 bg-orange-900/30 border-orange-700';
+      case 'medium': return 'text-yellow-300 bg-yellow-900/30 border-yellow-700';
+      default: return 'text-blue-300 bg-blue-900/30 border-blue-700';
     }
   };
 
@@ -315,32 +315,32 @@ const ArgoMonitoringSystem = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6 pt-20 pb-20">
       <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+        <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Activity className="h-8 w-8 text-blue-600" />
+              <Activity className="h-8 w-8 text-blue-400" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Argo Ocean Data Monitoring System</h1>
-                <p className="text-gray-600">Real-time monitoring with immediate email alerts for threshold violations</p>
+                <h1 className="text-2xl font-bold text-white">Argo Ocean Data Monitoring System</h1>
+                <p className="text-gray-400">Real-time monitoring with immediate email alerts for threshold violations</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               {/* Email Status Indicator */}
               {emailStatus.sending && (
-                <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-orange-100 text-orange-800">
+                <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-orange-900/30 text-orange-300">
                   <Send className="h-4 w-4 animate-spin" />
                   <span className="text-sm font-medium">Sending Alert...</span>
                 </div>
               )}
               
               <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${
-                isMonitoring ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                isMonitoring ? 'bg-green-900/30 text-green-300' : 'bg-gray-700 text-gray-400'
               }`}>
-                <div className={`h-2 w-2 rounded-full ${isMonitoring ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                <div className={`h-2 w-2 rounded-full ${isMonitoring ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
                 <span className="text-sm font-medium">
                   {isMonitoring ? 'Monitoring Active' : 'Monitoring Stopped'}
                 </span>
@@ -366,8 +366,8 @@ const ArgoMonitoringSystem = () => {
           <div className="lg:col-span-2 space-y-6">
             
             {/* Current Values with Threshold Indicators */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Current Measurements</h2>
+            <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
+              <h2 className="text-xl font-semibold text-white mb-4">Current Measurements</h2>
               {currentData.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {['temperature', 'salinity', 'pressure', 'oxygen'].map((param, index) => {
@@ -378,15 +378,15 @@ const ArgoMonitoringSystem = () => {
                     const isViolation = currentValue < threshold.min || currentValue > threshold.max;
                     
                     return (
-                      <div key={param} className={`p-4 rounded-lg ${isViolation ? 'ring-2 ring-red-500 bg-red-50' : `bg-gradient-to-r from-${colors[index]}-50 to-${colors[index]}-100`}`}>
-                        <div className={`text-sm font-medium flex items-center justify-between ${isViolation ? 'text-red-600' : `text-${colors[index]}-600`}`}>
+                      <div key={param} className={`p-4 rounded-lg ${isViolation ? 'ring-2 ring-red-500 bg-red-900/20' : `bg-gradient-to-r from-${colors[index]}-900/20 to-${colors[index]}-800/30`}`}>
+                        <div className={`text-sm font-medium flex items-center justify-between ${isViolation ? 'text-red-300' : `text-${colors[index]}-300`}`}>
                           <span>{param.charAt(0).toUpperCase() + param.slice(1)}</span>
                           {isViolation && <AlertTriangle className="h-4 w-4" />}
                         </div>
-                        <div className={`text-2xl font-bold ${isViolation ? 'text-red-700' : `text-${colors[index]}-700`}`}>
+                        <div className={`text-2xl font-bold ${isViolation ? 'text-red-300' : `text-${colors[index]}-300`}`}>
                           {currentValue}{units[index]}
                         </div>
-                        <div className="text-xs text-gray-600 mt-1">
+                        <div className="text-xs text-gray-400 mt-1">
                           Range: {threshold.min} - {threshold.max}
                         </div>
                       </div>
@@ -397,49 +397,55 @@ const ArgoMonitoringSystem = () => {
             </div>
 
             {/* Charts */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Parameter Trends</h2>
+            <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
+              <h2 className="text-xl font-semibold text-white mb-4">Parameter Trends</h2>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={currentData.slice(-20)}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="temperature" stroke="#ef4444" strokeWidth={2} name="Temperature (°C)" />
-                    <Line type="monotone" dataKey="salinity" stroke="#3b82f6" strokeWidth={2} name="Salinity (PSU)" />
-                    <Line type="monotone" dataKey="pressure" stroke="#10b981" strokeWidth={2} name="Pressure (dbar)" />
-                    <Line type="monotone" dataKey="oxygen" stroke="#8b5cf6" strokeWidth={2} name="Oxygen (μmol/kg)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
+                    <XAxis dataKey="time" stroke="#9CA3AF" />
+                    <YAxis stroke="#9CA3AF" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#1F2937', 
+                        borderColor: '#4B5563',
+                        color: '#F3F4F6'
+                      }} 
+                    />
+                    <Legend wrapperStyle={{ color: '#D1D5DB' }} />
+                    <Line type="monotone" dataKey="temperature" stroke="#EF4444" strokeWidth={2} name="Temperature (°C)" />
+                    <Line type="monotone" dataKey="salinity" stroke="#3B82F6" strokeWidth={2} name="Salinity (PSU)" />
+                    <Line type="monotone" dataKey="pressure" stroke="#10B981" strokeWidth={2} name="Pressure (dbar)" />
+                    <Line type="monotone" dataKey="oxygen" stroke="#8B5CF6" strokeWidth={2} name="Oxygen (μmol/kg)" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
             {/* Threshold Settings */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Threshold Settings</h2>
+            <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
+              <h2 className="text-xl font-semibold text-white mb-4">Threshold Settings</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {Object.entries(thresholds).map(([param, values]) => (
                   <div key={param} className="space-y-3">
-                    <h3 className="font-medium text-gray-900 capitalize">{param}</h3>
+                    <h3 className="font-medium text-white capitalize">{param}</h3>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-xs text-gray-600">Min</label>
+                        <label className="block text-xs text-gray-400">Min</label>
                         <input
                           type="number"
                           value={values.min}
                           onChange={(e) => updateThreshold(param, 'min', e.target.value)}
-                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                          className="w-full px-2 py-1 text-sm border border-gray-600 rounded bg-gray-700 text-white"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-600">Max</label>
+                        <label className="block text-xs text-gray-400">Max</label>
                         <input
                           type="number"
                           value={values.max}
                           onChange={(e) => updateThreshold(param, 'max', e.target.value)}
-                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                          className="w-full px-2 py-1 text-sm border border-gray-600 rounded bg-gray-700 text-white"
                         />
                       </div>
                     </div>
@@ -453,66 +459,66 @@ const ArgoMonitoringSystem = () => {
           <div className="space-y-6">
             
             {/* Scientists Panel */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+            <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
               <div className="flex items-center space-x-2 mb-4">
-                <Settings className="h-5 w-5 text-gray-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Scientists</h2>
+                <Settings className="h-5 w-5 text-gray-400" />
+                <h2 className="text-lg font-semibold text-white">Scientists</h2>
               </div>
               <div className="space-y-3">
                 {scientists.map(scientist => (
-                  <div key={scientist.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={scientist.id} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
                     <div>
-                      <div className="font-medium text-gray-900">{scientist.name}</div>
-                      <div className="text-sm text-gray-600">{scientist.email}</div>
+                      <div className="font-medium text-white">{scientist.name}</div>
+                      <div className="text-sm text-gray-400">{scientist.email}</div>
                     </div>
                     <button
                       onClick={() => toggleScientist(scientist.id)}
                       className={`flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium ${
                         scientist.active 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-gray-100 text-gray-600'
+                          ? 'bg-green-900/30 text-green-300' 
+                          : 'bg-gray-700 text-gray-400'
                       }`}
                     >
-                      {scientist.active ? <CheckCircle className="h-3 w-3" /> : <div className="h-3 w-3 rounded-full bg-gray-400" />}
+                      {scientist.active ? <CheckCircle className="h-3 w-3" /> : <div className="h-3 w-3 rounded-full bg-gray-500" />}
                       {scientist.active ? 'Active' : 'Inactive'}
                     </button>
                   </div>
                 ))}
               </div>
               
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="text-sm font-medium text-gray-900 mb-2">Notification Methods</div>
+              <div className="mt-4 pt-4 border-t border-gray-700">
+                <div className="text-sm font-medium text-white mb-2">Notification Methods</div>
                 <div className="space-y-2">
                   <label className="flex items-center space-x-2">
                     <input
                       type="checkbox"
                       checked={notificationMethods.email}
                       onChange={(e) => setNotificationMethods(prev => ({...prev, email: e.target.checked}))}
-                      className="rounded border-gray-300"
+                      className="rounded border-gray-600 bg-gray-700 text-blue-500"
                     />
-                    <Mail className="h-4 w-4 text-gray-600" />
-                    <span className="text-sm text-gray-700">Real-time Email Alerts</span>
+                    <Mail className="h-4 w-4 text-gray-400" />
+                    <span className="text-sm text-gray-300">Real-time Email Alerts</span>
                   </label>
                   <label className="flex items-center space-x-2">
                     <input
                       type="checkbox"
                       checked={notificationMethods.sms}
                       onChange={(e) => setNotificationMethods(prev => ({...prev, sms: e.target.checked}))}
-                      className="rounded border-gray-300"
+                      className="rounded border-gray-600 bg-gray-700 text-blue-500"
                     />
-                    <MessageSquare className="h-4 w-4 text-gray-600" />
-                    <span className="text-sm text-gray-700">SMS Notifications</span>
+                    <MessageSquare className="h-4 w-4 text-gray-400" />
+                    <span className="text-sm text-gray-300">SMS Notifications</span>
                   </label>
                 </div>
               </div>
             </div>
 
             {/* Recent Notifications */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+            <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
               <div className="flex items-center space-x-2 mb-4">
-                <Bell className="h-5 w-5 text-gray-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Recent Notifications</h2>
-                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">
+                <Bell className="h-5 w-5 text-gray-400" />
+                <h2 className="text-lg font-semibold text-white">Recent Notifications</h2>
+                <span className="bg-blue-900/30 text-blue-300 text-xs font-medium px-2 py-1 rounded-full">
                   {notifications.length}
                 </span>
               </div>
@@ -527,24 +533,24 @@ const ArgoMonitoringSystem = () => {
                           {notification.type === 'email' ? <Mail className="h-4 w-4" /> : <MessageSquare className="h-4 w-4" />}
                           <div>
                             <div className="font-medium text-sm flex items-center space-x-2">
-                              <span>{notification.scientist}</span>
+                              <span className="text-white">{notification.scientist}</span>
                               {notification.realTime && (
-                                <span className="text-xs bg-red-100 text-red-700 px-1 rounded">REAL-TIME</span>
+                                <span className="text-xs bg-red-900/30 text-red-300 px-1 rounded">REAL-TIME</span>
                               )}
                             </div>
-                            <div className="text-xs opacity-80">{notification.recipient}</div>
+                            <div className="text-xs opacity-80 text-gray-400">{notification.recipient}</div>
                           </div>
                         </div>
                         <div className="flex items-center space-x-1">
                           <AlertTriangle className="h-4 w-4" />
-                          <span className="text-xs font-medium uppercase">{notification.severity}</span>
+                          <span className="text-xs font-medium uppercase text-white">{notification.severity}</span>
                         </div>
                       </div>
-                      <div className="text-sm mt-2 opacity-90">{notification.message}</div>
-                      <div className="text-xs opacity-70 mt-1 flex items-center justify-between">
+                      <div className="text-sm mt-2 opacity-90 text-gray-300">{notification.message}</div>
+                      <div className="text-xs opacity-70 mt-1 flex items-center justify-between text-gray-400">
                         <span>{new Date(notification.timestamp).toLocaleString()}</span>
                         <span className={`px-2 py-1 rounded-full text-xs ${
-                          notification.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                          notification.status === 'sent' ? 'bg-green-900/30 text-green-300' : 'bg-red-900/30 text-red-300'
                         }`}>
                           {notification.status}
                         </span>

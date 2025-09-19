@@ -118,25 +118,25 @@ const ArgoDataAnalyzer = () => {
   };
 
   const MetricCard = ({ title, value, change, trend, icon: Icon, unit = '' }) => (
-    <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow">
+    <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-shadow">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className="p-3 bg-blue-100 rounded-lg">
-            <Icon className="h-6 w-6 text-blue-600" />
+          <div className="p-3 bg-blue-900 rounded-lg">
+            <Icon className="h-6 w-6 text-blue-400" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+          <h3 className="text-lg font-semibold text-gray-200">{title}</h3>
         </div>
         {trend === 'increasing' ? 
-          <TrendingUp className="h-5 w-5 text-red-500" /> : 
-          <TrendingDown className="h-5 w-5 text-green-500" />
+          <TrendingUp className="h-5 w-5 text-red-400" /> : 
+          <TrendingDown className="h-5 w-5 text-green-400" />
         }
       </div>
       <div className="space-y-2">
-        <p className="text-2xl font-bold text-gray-900">
+        <p className="text-2xl font-bold text-white">
           {value}{unit}
         </p>
-        <p className="text-sm text-gray-600">
-          <span className={`font-medium ${trend === 'increasing' ? 'text-red-600' : 'text-green-600'}`}>
+        <p className="text-sm text-gray-400">
+          <span className={`font-medium ${trend === 'increasing' ? 'text-red-400' : 'text-green-400'}`}>
             {trend === 'increasing' ? '↑' : '↓'} {change}%
           </span>
           {' '}over {analysisYears} years
@@ -146,16 +146,16 @@ const ArgoDataAnalyzer = () => {
   );
 
   return (
-    <div className="min-h-screen mt-20 bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen mt-20 bg-gradient-to-br from-gray-900 to-gray-800">
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-green-800  mb-2">
+              <h1 className="text-4xl font-bold text-blue-400 mb-2">
                 Ocean Argo Data Analyzer
               </h1>
-              <p className="text-xl text-gray-600">
+              <p className="text-xl text-gray-400">
                 Advanced Ocean data analyse and transform platform
               </p>
             </div>
@@ -177,16 +177,16 @@ const ArgoDataAnalyzer = () => {
         </div>
 
         {/* Controls */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div className="bg-gray-800 rounded-xl shadow-lg p-6 mb-8 border border-gray-700">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Analysis Period
               </label>
               <select
                 value={analysisYears}
                 onChange={(e) => setAnalysisYears(parseInt(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value={5}>Last 5 Years</option>
                 <option value={10}>Last 10 Years</option>
@@ -196,13 +196,13 @@ const ArgoDataAnalyzer = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 View Mode
               </label>
               <select
                 value={viewMode}
                 onChange={(e) => setViewMode(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="overview">Overview Dashboard</option>
                 <option value="detailed">Detailed Analysis</option>
@@ -211,13 +211,13 @@ const ArgoDataAnalyzer = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Data Points
               </label>
-              <div className="text-lg font-semibold text-blue-600">
+              <div className="text-lg font-semibold text-blue-400">
                 {filteredData.length.toLocaleString()} measurements
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-400">
                 From {startYear} to {currentYear}
               </div>
             </div>
@@ -289,9 +289,6 @@ const ArgoDataAnalyzer = () => {
                   </li>
                 </ul>
               </div>
-              </div>
-              </div>
-
               <div className="transform hover:scale-105 transition-transform duration-300">
                 <h3 className="text-lg font-semibold mb-3 border-b border-white/30 pb-2">🔬 Scientific Impact</h3>
                 <ul className="space-y-3 text-cyan-50">
@@ -314,18 +311,21 @@ const ArgoDataAnalyzer = () => {
                 </ul>
               </div>
             </div>
+          </div>
+        </div>
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Temperature Trend */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Temperature Trends</h3>
+          <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
+            <h3 className="text-xl font-semibold text-gray-200 mb-4">Temperature Trends</h3>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={yearlyAverages}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="year" />
-                <YAxis />
+                <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
+                <XAxis dataKey="year" stroke="#9CA3AF" />
+                <YAxis stroke="#9CA3AF" />
                 <Tooltip 
+                  contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151', color: '#F3F4F6' }}
                   labelFormatter={(value) => `Year: ${value}`}
                   formatter={(value, name) => [`${value}°C`, 'Temperature']}
                 />
@@ -342,14 +342,15 @@ const ArgoDataAnalyzer = () => {
           </div>
 
           {/* Salinity vs pH */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Salinity vs pH Correlation</h3>
+          <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
+            <h3 className="text-xl font-semibold text-gray-200 mb-4">Salinity vs pH Correlation</h3>
             <ResponsiveContainer width="100%" height={300}>
               <ScatterChart data={yearlyAverages}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="salinity" name="Salinity" unit=" PSU" />
-                <YAxis dataKey="phLevel" name="pH" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
+                <XAxis dataKey="salinity" name="Salinity" unit=" PSU" stroke="#9CA3AF" />
+                <YAxis dataKey="phLevel" name="pH" stroke="#9CA3AF" />
                 <Tooltip 
+                  contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151', color: '#F3F4F6' }}
                   cursor={{ strokeDasharray: '3 3' }}
                   formatter={(value, name) => [value, name === 'phLevel' ? 'pH Level' : 'Salinity']}
                 />
@@ -363,14 +364,16 @@ const ArgoDataAnalyzer = () => {
           </div>
 
           {/* Multi-parameter Area Chart */}
-          <div className="bg-white rounded-xl shadow-lg p-6 lg:col-span-2">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Multi-Parameter Analysis</h3>
+          <div className="bg-gray-800 rounded-xl shadow-lg p-6 lg:col-span-2 border border-gray-700">
+            <h3 className="text-xl font-semibold text-gray-200 mb-4">Multi-Parameter Analysis</h3>
             <ResponsiveContainer width="100%" height={400}>
               <AreaChart data={yearlyAverages}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="year" />
-                <YAxis />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
+                <XAxis dataKey="year" stroke="#9CA3AF" />
+                <YAxis stroke="#9CA3AF" />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151', color: '#F3F4F6' }}
+                />
                 <Legend />
                 <Area 
                   type="monotone" 
@@ -402,29 +405,29 @@ const ArgoDataAnalyzer = () => {
         </div>
 
         {/* Data Table */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Yearly Averages Summary</h3>
+        <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
+          <h3 className="text-xl font-semibold text-gray-200 mb-4">Yearly Averages Summary</h3>
           <div className="overflow-x-auto">
             <table className="w-full table-auto">
               <thead>
-                <tr className="bg-gray-50">
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temperature (°C)</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salinity (PSU)</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Oxygen (μmol/kg)</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">pH</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg Depth (m)</th>
+                <tr className="bg-gray-700">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Year</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Temperature (°C)</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Salinity (PSU)</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Oxygen (μmol/kg)</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">pH</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Avg Depth (m)</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-700">
                 {yearlyAverages.map((row, index) => (
-                  <tr key={row.year} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.year}</td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{row.temperature}</td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{row.salinity}</td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{row.oxygenLevel}</td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{row.phLevel}</td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{row.depth}</td>
+                  <tr key={row.year} className={index % 2 === 0 ? 'bg-gray-700' : 'bg-gray-800'}>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-200">{row.year}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-200">{row.temperature}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-200">{row.salinity}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-200">{row.oxygenLevel}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-200">{row.phLevel}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-200">{row.depth}</td>
                   </tr>
                 ))}
               </tbody>
