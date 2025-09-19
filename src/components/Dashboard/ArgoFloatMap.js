@@ -79,7 +79,7 @@ const ArgoFloatMap = ({ argoFloats, handleFloatSelect }) => {
   };
 
   return (
-    <div className="h-48 xs:h-56 sm:h-64 md:h-72 lg:h-80 xl:h-96 2xl:h-[450px] mb-2 xs:mb-3 sm:mb-4">
+    <div className="h-48 xs:h-56 sm:h-64 md:h-72 lg:h-80 xl:h-96 2xl:h-[450px] mb-2 xs:mb-3 sm:mb-4 z-10 relative">
       <MapContainer
         center={[-4.95, 86.092]}
         zoom={mapZoom}
@@ -96,6 +96,7 @@ const ArgoFloatMap = ({ argoFloats, handleFloatSelect }) => {
         touchZoom={true}
         doubleClickZoom={true}
         scrollWheelZoom={true}
+        className="z-10"
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -110,22 +111,22 @@ const ArgoFloatMap = ({ argoFloats, handleFloatSelect }) => {
               click: () => handleFloatSelect(float),
             }}
           >
-            <Popup className="custom-popup">
+            <Popup className="custom-popup z-10 dark:bg-gray-800 dark:text-white">
               <div className="p-1 xs:p-2">
-                <strong className="text-xs xs:text-sm sm:text-base md:text-lg">
+                <strong className="text-xs xs:text-sm sm:text-base md:text-lg text-gray-900 dark:text-white">
                   Float {float.platform_number}
                 </strong>
                 <div className="mt-1 xs:mt-2 space-y-0.5 xs:space-y-1">
-                  <p className="text-[10px] xs:text-xs sm:text-sm md:text-base">
+                  <p className="text-[10px] xs:text-xs sm:text-sm md:text-base text-gray-700 dark:text-gray-300">
                     📍 {float.latitude}°N, {float.longitude}°E
                   </p>
-                  <p className="text-[10px] xs:text-xs sm:text-sm md:text-base">
+                  <p className="text-[10px] xs:text-xs sm:text-sm md:text-base text-gray-700 dark:text-gray-300">
                     📅 {float.last_measurement}
                   </p>
-                  <p className="text-[10px] xs:text-xs sm:text-sm md:text-base">
+                  <p className="text-[10px] xs:text-xs sm:text-sm md:text-base text-gray-700 dark:text-gray-300">
                     🔧 {float.data_mode}
                   </p>
-                  <p className="text-[10px] xs:text-xs sm:text-sm md:text-base">
+                  <p className="text-[10px] xs:text-xs sm:text-sm md:text-base text-gray-700 dark:text-gray-300">
                     📊 {float.measurements} measurements
                   </p>
                 </div>
@@ -143,14 +144,14 @@ const ArgoFloatMap = ({ argoFloats, handleFloatSelect }) => {
       
       {/* Instructions for different devices */}
       {isMobile && (
-        <div className="mt-2 text-xs text-gray-600 text-center">
+        <div className="mt-2 text-xs text-gray-400 text-center z-10">
           <p>Tap on markers to view float details</p>
           <p className="text-[10px]">Pinch to zoom in/out</p>
         </div>
       )}
       
       {isSmallLaptop && (
-        <div className="mt-2 text-sm text-gray-600 text-center">
+        <div className="mt-2 text-sm text-gray-400 text-center">
           <p>Click on markers or use mouse wheel to zoom</p>
         </div>
       )}
@@ -158,15 +159,39 @@ const ArgoFloatMap = ({ argoFloats, handleFloatSelect }) => {
   );
 };
 
-// Add custom CSS for popup styling optimized for small laptops
+// Add custom CSS for popup styling optimized for small laptops and dark theme
 const styles = `
   .custom-popup .leaflet-popup-content-wrapper {
     border-radius: 8px;
     max-width: 280px; /* Optimal for small laptops */
+    background-color: #1f2937; /* Dark background */
+    color: #f3f4f6; /* Light text */
   }
+  
   .custom-popup .leaflet-popup-content {
     margin: 0;
     line-height: 1.4;
+  }
+  
+  .custom-popup .leaflet-popup-tip {
+    background-color: #1f2937; /* Dark background for tip */
+  }
+  
+  /* Fix z-index for map elements to prevent conflicts with navbar */
+  .leaflet-container {
+    z-index: 10;
+  }
+  
+  .leaflet-pane {
+    z-index: 10;
+  }
+  
+  .leaflet-top, .leaflet-bottom {
+    z-index: 10;
+  }
+  
+  .leaflet-control {
+    z-index: 10;
   }
   
   /* Small laptop specific styles */
