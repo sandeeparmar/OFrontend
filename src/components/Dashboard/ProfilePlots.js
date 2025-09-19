@@ -62,11 +62,15 @@ export const SalinityProfile = ({ argoData }) => {
 };
 
 // Updated ProfilePlots component that uses the separated components
-const ProfilePlots = ({ argoData }) => {
+const ProfilePlots = ({ argoData, parameter = 'both' }) => {
   return (
-    <div className="grid grid-cols-1 gap-4 ">
-      <TemperatureProfile argoData={argoData} />
-      <SalinityProfile argoData={argoData} />
+    <div className="grid grid-cols-1 gap-4">
+      {(parameter === 'temperature' || parameter === 'both') && (
+        <TemperatureProfile argoData={argoData} />
+      )}
+      {(parameter === 'salinity' || parameter === 'both') && (
+        <SalinityProfile argoData={argoData} />
+      )}
     </div>
   );
 };
