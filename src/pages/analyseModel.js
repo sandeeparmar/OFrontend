@@ -152,11 +152,11 @@ const ArgoDataAnalyzer = () => {
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-800 mb-2">
+              <h1 className="text-4xl font-bold text-green-800  mb-2">
                 Ocean Argo Data Analyzer
               </h1>
               <p className="text-xl text-gray-600">
-                Advanced oceanographic data analysis and visualization platform
+                Advanced Ocean data analyse and transform platform
               </p>
             </div>
             <div className="mt-4 md:mt-0 flex items-center space-x-4">
@@ -166,11 +166,11 @@ const ArgoDataAnalyzer = () => {
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
               >
                 <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                <span>Refresh Data</span>
+                <span>Load</span>
               </button>
               <button className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                 <Download className="h-4 w-4" />
-                <span>Export Report</span>
+                <span>Download </span>
               </button>
             </div>
           </div>
@@ -260,32 +260,60 @@ const ArgoDataAnalyzer = () => {
         </div>
 
         {/* AI Summary */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-6 mb-8 text-white">
-          <h2 className="text-2xl font-bold mb-4 flex items-center">
-            <Activity className="h-6 w-6 mr-2" />
-            AI-Generated Analysis Summary
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Key Findings</h3>
-              <ul className="space-y-2 text-indigo-100">
-                <li>• Ocean temperature has been {summary.temperatureTrend} by {summary.temperatureChange}% over {analysisYears} years</li>
-                <li>• Salinity levels show a {summary.salinityTrend} trend of {summary.salinityChange}%</li>
-                <li>• Oxygen concentrations are {summary.oxygenTrend} by {summary.oxygenChange}%</li>
-                <li>• pH levels indicate ocean {summary.phTrend === 'decreasing' ? 'acidification' : 'alkalization'}</li>
-              </ul>
+        <div className="bg-[#3f2b96] rounded-xl shadow-lg p-6 mb-8 text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+          <div className="relative z-10">
+            <h2 className="text-2xl font-bold mb-4 flex items-center animate-pulse">
+              <Activity className="h-6 w-6 mr-2 animate-bounce" />
+              AI-Generated Analysis Summary
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="transform hover:scale-105 transition-transform duration-300">
+                <h3 className="text-lg font-semibold mb-3 border-b border-white/30 pb-2">🔍 Key Findings</h3>
+                <ul className="space-y-3 text-cyan-50">
+                  <li className="flex items-start space-x-2 transform transition-all duration-300 hover:translate-x-2">
+                    <span className="text-yellow-300 font-bold">🌡️</span>
+                    <span>Ocean temperature has been <span className={`font-bold ${summary.temperatureTrend === 'increasing' ? 'text-red-300' : 'text-blue-300'}`}>{summary.temperatureTrend}</span> by <span className="text-yellow-200 font-semibold">{summary.temperatureChange}%</span> over {analysisYears} years</span>
+                  </li>
+                  <li className="flex items-start space-x-2 transform transition-all duration-300 hover:translate-x-2">
+                    <span className="text-blue-300 font-bold">💧</span>
+                    <span>Salinity levels show a <span className={`font-bold ${summary.salinityTrend === 'increasing' ? 'text-orange-300' : 'text-green-300'}`}>{summary.salinityTrend}</span> trend of <span className="text-yellow-200 font-semibold">{summary.salinityChange}%</span></span>
+                  </li>
+                  <li className="flex items-start space-x-2 transform transition-all duration-300 hover:translate-x-2">
+                    <span className="text-green-300 font-bold">💨</span>
+                    <span>Oxygen concentrations are <span className={`font-bold ${summary.oxygenTrend === 'increasing' ? 'text-green-300' : 'text-red-300'}`}>{summary.oxygenTrend}</span> by <span className="text-yellow-200 font-semibold">{summary.oxygenChange}%</span></span>
+                  </li>
+                  <li className="flex items-start space-x-2 transform transition-all duration-300 hover:translate-x-2">
+                    <span className="text-purple-300 font-bold">⚗️</span>
+                    <span>pH levels indicate ocean <span className={`font-bold ${summary.phTrend === 'decreasing' ? 'text-red-300' : 'text-green-300'}`}>{summary.phTrend === 'decreasing' ? 'acidification' : 'alkalization'}</span></span>
+                  </li>
+                </ul>
+              </div>
+              </div>
+              </div>
+
+              <div className="transform hover:scale-105 transition-transform duration-300">
+                <h3 className="text-lg font-semibold mb-3 border-b border-white/30 pb-2">🔬 Scientific Impact</h3>
+                <ul className="space-y-3 text-cyan-50">
+                  <li className="flex items-start space-x-2 transform transition-all duration-300 hover:translate-x-2">
+                    <span className="text-red-300 font-bold">⚠️</span>
+                    <span><span className="font-semibold text-red-200">Climate change indicators</span> are clearly visible in the data</span>
+                  </li>
+                  <li className="flex items-start space-x-2 transform transition-all duration-300 hover:translate-x-2">
+                    <span className="text-orange-300 font-bold">🐟</span>
+                    <span><span className="font-semibold text-orange-200">Marine ecosystem health</span> shows concerning trends</span>
+                  </li>
+                  <li className="flex items-start space-x-2 transform transition-all duration-300 hover:translate-x-2">
+                    <span className="text-blue-300 font-bold">🌊</span>
+                    <span><span className="font-semibold text-blue-200">Deep ocean circulation patterns</span> may be shifting</span>
+                  </li>
+                  <li className="flex items-start space-x-2 transform transition-all duration-300 hover:translate-x-2">
+                    <span className="text-yellow-300 font-bold">🚨</span>
+                    <span><span className="font-semibold text-yellow-200">Immediate attention required</span> for conservation efforts</span>
+                  </li>
+                </ul>
+              </div>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Scientific Impact</h3>
-              <ul className="space-y-2 text-indigo-100">
-                <li>• Climate change indicators are clearly visible in the data</li>
-                <li>• Marine ecosystem health shows concerning trends</li>
-                <li>• Deep ocean circulation patterns may be shifting</li>
-                <li>• Immediate attention required for conservation efforts</li>
-              </ul>
-            </div>
-          </div>
-        </div>
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -402,11 +430,6 @@ const ArgoDataAnalyzer = () => {
               </tbody>
             </table>
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-8 text-center text-gray-500">
-          <p>Ocean Argo Data Analyzer © 2024 | Data spans {analysisYears} years with {summary.totalMeasurements} measurements</p>
         </div>
       </div>
     </div>

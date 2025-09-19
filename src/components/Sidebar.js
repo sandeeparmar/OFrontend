@@ -23,7 +23,7 @@ const Navbar = () => {
     { name: 'Chatbot', href: '/chatbot' },
     { name: 'Visualisation', href: '/testing' },
     {name :'Analyse' , href :'/analyse'} ,
-    {name :'Changes' ,href :'/alert' }
+    {name :'Alert' ,href :'/alert' }
   ];
 
   if (user && user.role === 'admin') {

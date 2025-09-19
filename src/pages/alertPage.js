@@ -1,22 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Bell, Mail, MessageSquare, Activity, AlertTriangle, CheckCircle, Settings, Play, Pause } from 'lucide-react';
+import { Bell, Mail, MessageSquare, Activity, AlertTriangle, CheckCircle, Settings, Play, Pause, Send } from 'lucide-react';
+import axios from 'axios';
 
 const ArgoMonitoringSystem = () => {
   const [isMonitoring, setIsMonitoring] = useState(false);
   const [currentData, setCurrentData] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [emailStatus, setEmailStatus] = useState({ sending: false, lastSent: null });
   const [scientists, setScientists] = useState([
-    { id: 1, name: 'Dr. Sarah Johnson', email: 'sarah.johnson@oceaninst.edu', phone: '+1-555-0101', active: true },
-    { id: 2, name: 'Dr. Mike Chen', email: 'mike.chen@marinelab.org', phone: '+1-555-0102', active: true },
-    { id: 3, name: 'Dr. Emma Rodriguez', email: 'emma.rodriguez@oceanresearch.com', phone: '+1-555-0103', active: false }
+    { id: 1, name: 'Dr. Sandeep Parmar', email: '23bit062@ietdavv.edu.in', phone: '+1-555-0101', active: true },
+    { id: 2, name: 'Dr. Jay Dhangi ', email: '23bit062@ietdavv.edu.in', phone: '+1-555-0102', active: true },
+    { id: 3, name: 'Dr. Monu ', email: '23bit062@ietdavv.edu.in', phone: '+1-555-0103', active: false }
   ]);
+
   const [thresholds, setThresholds] = useState({
-    temperature: { min: 2, max: 30, changeRate: 2.0 },
-    salinity: { min: 30, max: 40, changeRate: 1.0 },
-    pressure: { min: 0, max: 2000, changeRate: 50 },
-    oxygen: { min: 0, max: 300, changeRate: 20 }
+    temperature: { min: 2, max: 25, changeRate: 2.0 },
+    salinity: { min: 32, max: 38, changeRate: 1.0 },
+    pressure: { min: 0, max: 400, changeRate: 50 },
+    oxygen: { min: 150, max: 280, changeRate: 20 }
   });
+  
   const [notificationMethods, setNotificationMethods] = useState({
     email: true,
     sms: true
@@ -25,174 +29,225 @@ const ArgoMonitoringSystem = () => {
   const intervalRef = useRef(null);
   const dataHistoryRef = useRef([]);
 
-  // Simulate real Argo data with realistic oceanographic values
+  // Enhanced email sending function with real-time capability
+  const sendRealTimeEmail = async (alert, dataPoint, scientist) => {
+    setEmailStatus(prev => ({ ...prev, sending: true }));
+    
+    try {
+      // Simulate real email API call - replace with actual email service
+      const emailData = {
+        to: scientist.email,
+        subject: `🚨 URGENT: Argo Data Alert - ${alert.parameter.toUpperCase()} Threshold Exceeded`,
+        body: `
+          ALERT DETAILS:
+          ================
+          Parameter: ${alert.parameter.toUpperCase()}
+          Current Value: ${alert.value}
+          Threshold: ${alert.threshold}
+          Severity: ${alert.severity.toUpperCase()}
+          
+          LOCATION:
+          Latitude: ${dataPoint.latitude}°
+          Longitude: ${dataPoint.longitude}°
+          Depth: ${dataPoint.depth}m
+          
+          MESSAGE: ${alert.message}
+          
+          Time: ${new Date().toLocaleString()}
+          
+          This is an automated alert from the Argo Monitoring System.
+          Please check the system dashboard for real-time data.
+        `,
+        timestamp: new Date().toISOString()
+      };
+
+      // In a real implementation, you would call your email service here:
+      const response = await axios.post( 'http://localhost:4000/sendEmail', emailData);
+    console.log(response);
+
+      setEmailStatus(prev => ({ 
+        sending: false, 
+        lastSent: new Date().toISOString() 
+      }));
+
+      return {
+        success: true,
+        emailData
+      };
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      setEmailStatus(prev => ({ ...prev, sending: false }));
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  };
+
+  // Simulate real Argo data with higher chance of threshold violations for demo
   const generateArgoData = () => {
     const now = new Date();
-    const baseTemp = 15 + Math.sin(Date.now() / 100000) * 10; // Seasonal variation
+    const baseTemp = 15 + Math.sin(Date.now() / 100000) * 10;
     const baseSalinity = 35 + Math.sin(Date.now() / 80000) * 2;
-    const basePressure = 100 + Math.random() * 500;
+    const basePressure = 200 + Math.random() * 300;
     const baseOxygen = 200 + Math.sin(Date.now() / 120000) * 50;
 
-    // Add some random spikes occasionally to trigger alerts
-    const shouldSpike = Math.random() < 0.15; // 15% chance of spike
-    const spikeMultiplier = shouldSpike ? (1 + (Math.random() * 0.5)) : 1;
+    // Higher chance of threshold violations for demonstration
+    const shouldViolateThreshold = Math.random() < 0.25; // 25% chance
+    let temp = baseTemp + (Math.random() - 0.5) * 4;
+    let salinity = baseSalinity + (Math.random() - 0.5) * 2;
+    let pressure = basePressure + (Math.random() - 0.5) * 200;
+    let oxygen = baseOxygen + (Math.random() - 0.5) * 80;
+
+    // Occasionally generate values that exceed thresholds
+    if (shouldViolateThreshold) {
+      const param = Math.floor(Math.random() * 4);
+      switch (param) {
+        case 0: // Temperature
+          temp = Math.random() < 0.5 ? 1.5 : 26; // Below min or above max
+          break;
+        case 1: // Salinity
+          salinity = Math.random() < 0.5 ? 31 : 39; // Below min or above max
+          break;
+        case 2: // Pressure
+          pressure = Math.random() < 0.5 ? -5 : 450; // Below min or above max
+          break;
+        case 3: // Oxygen
+          oxygen = Math.random() < 0.5 ? 140 : 290; // Below min or above max
+          break;
+      }
+    }
 
     return {
       timestamp: now.toISOString(),
       time: now.toLocaleTimeString(),
-      temperature: parseFloat((baseTemp * spikeMultiplier + (Math.random() - 0.5) * 2).toFixed(2)),
-      salinity: parseFloat((baseSalinity * spikeMultiplier + (Math.random() - 0.5) * 1).toFixed(2)),
-      pressure: parseFloat((basePressure + (Math.random() - 0.5) * 100).toFixed(1)),
-      oxygen: parseFloat((baseOxygen + (Math.random() - 0.5) * 40).toFixed(1)),
+      temperature: parseFloat(temp.toFixed(2)),
+      salinity: parseFloat(salinity.toFixed(2)),
+      pressure: parseFloat(pressure.toFixed(1)),
+      oxygen: parseFloat(oxygen.toFixed(1)),
       depth: parseFloat((200 + Math.random() * 300).toFixed(1)),
       latitude: parseFloat((25.5 + (Math.random() - 0.5) * 0.1).toFixed(4)),
       longitude: parseFloat((-80.2 + (Math.random() - 0.5) * 0.1).toFixed(4))
+    
     };
   };
 
-  // Check for drastic changes in parameters
-  const analyzeDataChanges = (newData, previousData) => {
-    if (!previousData || previousData.length < 2) return [];
+  // Enhanced alert detection with immediate email sending
+  const analyzeDataAndSendAlerts = async (newData, previousData) => {
+    if (!previousData || previousData.length < 1) return [];
 
     const alerts = [];
     const latest = newData;
     const previous = previousData[previousData.length - 1];
-    const beforePrevious = previousData[previousData.length - 2];
 
     const parameters = ['temperature', 'salinity', 'pressure', 'oxygen'];
 
-    parameters.forEach(param => {
+    for (const param of parameters) {
       const currentValue = latest[param];
-      const previousValue = previous[param];
-      const beforePreviousValue = beforePrevious[param];
-
-      // Check for threshold violations
       const threshold = thresholds[param];
+
+      // Check for threshold violations (HIGH PRIORITY - IMMEDIATE EMAIL)
       if (currentValue < threshold.min || currentValue > threshold.max) {
-        alerts.push({
-          type: 'threshold_violation',
-          parameter: param,
-          value: currentValue,
-          threshold: currentValue < threshold.min ? `minimum (${threshold.min})` : `maximum (${threshold.max})`,
-          severity: 'high',
-          message: `${param.toUpperCase()} value ${currentValue} exceeds ${currentValue < threshold.min ? 'minimum' : 'maximum'} threshold`
-        });
+        const alertKey = `${param}_threshold_violation`;
+        const now = Date.now();
+        
+        // Prevent spam - only send alerts for same parameter once every 60 seconds for threshold violations
+        if (!lastAlertTime[alertKey] || (now - lastAlertTime[alertKey] > 60000)) {
+          const alert = {
+            type: 'threshold_violation',
+            parameter: param,
+            value: currentValue,
+            threshold: currentValue < threshold.min ? `minimum (${threshold.min})` : `maximum (${threshold.max})`,
+            severity: 'critical',
+            message: `${param.toUpperCase()} value ${currentValue} exceeds ${currentValue < threshold.min ? 'minimum' : 'maximum'} threshold`,
+            requiresImmediateEmail: true
+          };
+
+          alerts.push(alert);
+          setLastAlertTime(prev => ({ ...prev, [alertKey]: now }));
+
+          // Send immediate emails to active scientists
+          const activeScientists = scientists.filter(s => s.active);
+          if (notificationMethods.email && activeScientists.length > 0) {
+            for (const scientist of activeScientists) {
+              try {
+                const emailResult = await sendRealTimeEmail(alert, latest, scientist);
+                
+                // Add notification to the list
+                const notification = {
+                  id: Date.now() + Math.random(),
+                  timestamp: new Date().toISOString(),
+                  type: 'email',
+                  recipient: scientist.email,
+                  subject: `CRITICAL ALERT: ${param.toUpperCase()} Threshold Exceeded`,
+                  message: alert.message,
+                  status: emailResult.success ? 'sent' : 'failed',
+                  severity: alert.severity,
+                  scientist: scientist.name,
+                  alert: alert,
+                  realTime: true
+                };
+
+                setNotifications(prev => [notification, ...prev].slice(0, 100));
+              } catch (error) {
+                console.error('Error sending real-time email:', error);
+              }
+            }
+          }
+        }
       }
 
-      // Check for rapid changes
-      const changeRate = Math.abs(currentValue - previousValue);
-      const previousChangeRate = Math.abs(previousValue - beforePreviousValue);
-      
-      if (changeRate > threshold.changeRate) {
-        alerts.push({
-          type: 'rapid_change',
-          parameter: param,
-          value: currentValue,
-          previousValue: previousValue,
-          changeRate: changeRate.toFixed(2),
-          severity: changeRate > threshold.changeRate * 2 ? 'critical' : 'medium',
-          message: `Rapid ${param.toUpperCase()} change detected: ${changeRate.toFixed(2)} units in 5 seconds`
-        });
+      // Check for rapid changes (MEDIUM PRIORITY)
+      if (previous) {
+        const changeRate = Math.abs(currentValue - previous[param]);
+        
+        if (changeRate > threshold.changeRate) {
+          const alertKey = `${param}_rapid_change`;
+          const now = Date.now();
+          
+          if (!lastAlertTime[alertKey] || (now - lastAlertTime[alertKey] > 30000)) {
+            alerts.push({
+              type: 'rapid_change',
+              parameter: param,
+              value: currentValue,
+              previousValue: previous[param],
+              changeRate: changeRate.toFixed(2),
+              severity: changeRate > threshold.changeRate * 2 ? 'high' : 'medium',
+              message: `Rapid ${param.toUpperCase()} change detected: ${changeRate.toFixed(2)} units in 5 seconds`,
+              requiresImmediateEmail: false
+            });
+            
+            setLastAlertTime(prev => ({ ...prev, [alertKey]: now }));
+          }
+        }
       }
 
-      // Check for accelerating trends
-      if (changeRate > previousChangeRate * 1.5 && changeRate > threshold.changeRate * 0.5) {
-        alerts.push({
-          type: 'accelerating_trend',
-          parameter: param,
-          value: currentValue,
-          trend: currentValue > previousValue ? 'increasing' : 'decreasing',
-          severity: 'medium',
-          message: `Accelerating ${currentValue > previousValue ? 'increase' : 'decrease'} in ${param.toUpperCase()}`
-        });
-      }
-    });
+    }
 
     return alerts;
   };
 
-  // Simulate sending notifications
-  const sendNotifications = async (alerts) => {
-    const activeScientists = scientists.filter(s => s.active);
-    
-    for (const alert of alerts) {
-      // Prevent spam - only send alerts for same parameter once every 30 seconds
-      const alertKey = `${alert.parameter}_${alert.type}`;
-      const now = Date.now();
-      if (lastAlertTime[alertKey] && (now - lastAlertTime[alertKey] < 30000)) {
-        continue;
-      }
-
-      setLastAlertTime(prev => ({ ...prev, [alertKey]: now }));
-
-      const notificationPromises = activeScientists.map(async (scientist) => {
-        const notifications = [];
-        
-        if (notificationMethods.email) {
-          // Simulate email sending
-          await new Promise(resolve => setTimeout(resolve, 100));
-          notifications.push({
-            id: Date.now() + Math.random(),
-            timestamp: new Date().toISOString(),
-            type: 'email',
-            recipient: scientist.email,
-            subject: `ALERT: Argo Data Anomaly - ${alert.parameter.toUpperCase()}`,
-            message: `${alert.message}. Current value: ${alert.value}. Location: ${currentData[currentData.length - 1]?.latitude}, ${currentData[currentData.length - 1]?.longitude}`,
-            status: 'sent',
-            severity: alert.severity,
-            scientist: scientist.name,
-            alert: alert
-          });
-        }
-
-        if (notificationMethods.sms) {
-          // Simulate SMS sending
-          await new Promise(resolve => setTimeout(resolve, 150));
-          notifications.push({
-            id: Date.now() + Math.random() + 1000,
-            timestamp: new Date().toISOString(),
-            type: 'sms',
-            recipient: scientist.phone,
-            message: `ARGO ALERT: ${alert.parameter.toUpperCase()} anomaly detected. Value: ${alert.value}. Check email for details.`,
-            status: 'sent',
-            severity: alert.severity,
-            scientist: scientist.name,
-            alert: alert
-          });
-        }
-
-        return notifications;
-      });
-
-      const allNotifications = await Promise.all(notificationPromises);
-      const flatNotifications = allNotifications.flat();
-      
-      setNotifications(prev => [
-        ...flatNotifications,
-        ...prev
-      ].slice(0, 100)); // Keep only last 100 notifications
-    }
-  };
-
-  // Main monitoring loop
+  // Main monitoring loop with real-time alerts
   useEffect(() => {
     if (isMonitoring) {
-      intervalRef.current = setInterval(() => {
+      intervalRef.current = setInterval(async () => {
         const newDataPoint = generateArgoData();
         
+        // First, analyze for alerts before updating state
+        const alerts = await analyzeDataAndSendAlerts(newDataPoint, dataHistoryRef.current);
+        
         setCurrentData(prevData => {
-          const updatedData = [...prevData, newDataPoint].slice(-50); // Keep last 50 points
+          const updatedData = [...prevData, newDataPoint].slice(-50);
           dataHistoryRef.current = updatedData;
-          
-          // Analyze for alerts
-          const alerts = analyzeDataChanges(newDataPoint, prevData);
-          if (alerts.length > 0) {
-            sendNotifications(alerts);
-          }
-          
           return updatedData;
         });
-      }, 5000); // Update every 5 seconds
+
+        // Handle non-critical alerts (SMS, regular notifications)
+        const nonCriticalAlerts = alerts.filter(alert => !alert.requiresImmediateEmail);
+        if (nonCriticalAlerts.length > 0) {
+          sendRegularNotifications(nonCriticalAlerts, newDataPoint);
+        }
+      }, 3000); // Check every 3 seconds for more responsive monitoring
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -205,6 +260,34 @@ const ArgoMonitoringSystem = () => {
       }
     };
   }, [isMonitoring, scientists, thresholds, notificationMethods]);
+
+  // Regular notifications for non-critical alerts
+  const sendRegularNotifications = async (alerts, dataPoint) => {
+    const activeScientists = scientists.filter(s => s.active);
+    
+    for (const alert of alerts) {
+      for (const scientist of activeScientists) {
+        const notifications = [];
+        
+        if (notificationMethods.sms) {
+          notifications.push({
+            id: Date.now() + Math.random(),
+            timestamp: new Date().toISOString(),
+            type: 'sms',
+            recipient: scientist.phone,
+            message: `ARGO ALERT: ${alert.parameter.toUpperCase()} anomaly detected. Value: ${alert.value}`,
+            status: 'sent',
+            severity: alert.severity,
+            scientist: scientist.name,
+            alert: alert,
+            realTime: false
+          });
+        }
+
+        setNotifications(prev => [...notifications, ...prev].slice(0, 100));
+      }
+    }
+  };
 
   const getSeverityColor = (severity) => {
     switch (severity) {
@@ -221,8 +304,18 @@ const ArgoMonitoringSystem = () => {
     ));
   };
 
+  const updateThreshold = (param, type, value) => {
+    setThresholds(prev => ({
+      ...prev,
+      [param]: {
+        ...prev[param],
+        [type]: parseFloat(value)
+      }
+    }));
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 p-6 mt-20">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Header */}
@@ -232,10 +325,18 @@ const ArgoMonitoringSystem = () => {
               <Activity className="h-8 w-8 text-blue-600" />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Argo Ocean Data Monitoring System</h1>
-                <p className="text-gray-600">Real-time monitoring and alert system for oceanographic parameters</p>
+                <p className="text-gray-600">Real-time monitoring with immediate email alerts for threshold violations</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              {/* Email Status Indicator */}
+              {emailStatus.sending && (
+                <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-orange-100 text-orange-800">
+                  <Send className="h-4 w-4 animate-spin" />
+                  <span className="text-sm font-medium">Sending Alert...</span>
+                </div>
+              )}
+              
               <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${
                 isMonitoring ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
               }`}>
@@ -264,35 +365,33 @@ const ArgoMonitoringSystem = () => {
           {/* Data Visualization */}
           <div className="lg:col-span-2 space-y-6">
             
-            {/* Current Values */}
+            {/* Current Values with Threshold Indicators */}
             <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Current Measurements</h2>
               {currentData.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-gradient-to-r from-red-50 to-red-100 p-4 rounded-lg">
-                    <div className="text-sm text-red-600 font-medium">Temperature</div>
-                    <div className="text-2xl font-bold text-red-700">
-                      {currentData[currentData.length - 1]?.temperature}°C
-                    </div>
-                  </div>
-                  <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
-                    <div className="text-sm text-blue-600 font-medium">Salinity</div>
-                    <div className="text-2xl font-bold text-blue-700">
-                      {currentData[currentData.length - 1]?.salinity} PSU
-                    </div>
-                  </div>
-                  <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
-                    <div className="text-sm text-green-600 font-medium">Pressure</div>
-                    <div className="text-2xl font-bold text-green-700">
-                      {currentData[currentData.length - 1]?.pressure} dbar
-                    </div>
-                  </div>
-                  <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
-                    <div className="text-sm text-purple-600 font-medium">Oxygen</div>
-                    <div className="text-2xl font-bold text-purple-700">
-                      {currentData[currentData.length - 1]?.oxygen} μmol/kg
-                    </div>
-                  </div>
+                  {['temperature', 'salinity', 'pressure', 'oxygen'].map((param, index) => {
+                    const colors = ['red', 'blue', 'green', 'purple'];
+                    const units = ['°C', 'PSU', 'dbar', 'μmol/kg'];
+                    const currentValue = currentData[currentData.length - 1]?.[param];
+                    const threshold = thresholds[param];
+                    const isViolation = currentValue < threshold.min || currentValue > threshold.max;
+                    
+                    return (
+                      <div key={param} className={`p-4 rounded-lg ${isViolation ? 'ring-2 ring-red-500 bg-red-50' : `bg-gradient-to-r from-${colors[index]}-50 to-${colors[index]}-100`}`}>
+                        <div className={`text-sm font-medium flex items-center justify-between ${isViolation ? 'text-red-600' : `text-${colors[index]}-600`}`}>
+                          <span>{param.charAt(0).toUpperCase() + param.slice(1)}</span>
+                          {isViolation && <AlertTriangle className="h-4 w-4" />}
+                        </div>
+                        <div className={`text-2xl font-bold ${isViolation ? 'text-red-700' : `text-${colors[index]}-700`}`}>
+                          {currentValue}{units[index]}
+                        </div>
+                        <div className="text-xs text-gray-600 mt-1">
+                          Range: {threshold.min} - {threshold.max}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -314,6 +413,38 @@ const ArgoMonitoringSystem = () => {
                     <Line type="monotone" dataKey="oxygen" stroke="#8b5cf6" strokeWidth={2} name="Oxygen (μmol/kg)" />
                   </LineChart>
                 </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Threshold Settings */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Threshold Settings</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {Object.entries(thresholds).map(([param, values]) => (
+                  <div key={param} className="space-y-3">
+                    <h3 className="font-medium text-gray-900 capitalize">{param}</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-xs text-gray-600">Min</label>
+                        <input
+                          type="number"
+                          value={values.min}
+                          onChange={(e) => updateThreshold(param, 'min', e.target.value)}
+                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600">Max</label>
+                        <input
+                          type="number"
+                          value={values.max}
+                          onChange={(e) => updateThreshold(param, 'max', e.target.value)}
+                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -360,7 +491,7 @@ const ArgoMonitoringSystem = () => {
                       className="rounded border-gray-300"
                     />
                     <Mail className="h-4 w-4 text-gray-600" />
-                    <span className="text-sm text-gray-700">Email Notifications</span>
+                    <span className="text-sm text-gray-700">Real-time Email Alerts</span>
                   </label>
                   <label className="flex items-center space-x-2">
                     <input
@@ -395,7 +526,12 @@ const ArgoMonitoringSystem = () => {
                         <div className="flex items-center space-x-2">
                           {notification.type === 'email' ? <Mail className="h-4 w-4" /> : <MessageSquare className="h-4 w-4" />}
                           <div>
-                            <div className="font-medium text-sm">{notification.scientist}</div>
+                            <div className="font-medium text-sm flex items-center space-x-2">
+                              <span>{notification.scientist}</span>
+                              {notification.realTime && (
+                                <span className="text-xs bg-red-100 text-red-700 px-1 rounded">REAL-TIME</span>
+                              )}
+                            </div>
                             <div className="text-xs opacity-80">{notification.recipient}</div>
                           </div>
                         </div>
@@ -405,8 +541,13 @@ const ArgoMonitoringSystem = () => {
                         </div>
                       </div>
                       <div className="text-sm mt-2 opacity-90">{notification.message}</div>
-                      <div className="text-xs opacity-70 mt-1">
-                        {new Date(notification.timestamp).toLocaleString()}
+                      <div className="text-xs opacity-70 mt-1 flex items-center justify-between">
+                        <span>{new Date(notification.timestamp).toLocaleString()}</span>
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          notification.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                        }`}>
+                          {notification.status}
+                        </span>
                       </div>
                     </div>
                   ))
