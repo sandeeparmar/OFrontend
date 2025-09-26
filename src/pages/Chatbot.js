@@ -80,7 +80,7 @@ const Chatbot = () => {
       return { responseType: 'text', responseText, componentToRender: null, data: null };
     } catch (error) {
       console.error('Error getting response:', error);
-      return { responseType: 'text', responseText: "⚠️ Error processing request. Try again.", componentToRender: null, data: null };
+      return { responseType: 'text', responseText: "⚠ Error processing request. Try again.", componentToRender: null, data: null };
     }
   };
 
@@ -204,7 +204,7 @@ const Chatbot = () => {
       <div className="mx-auto w-full max-w-6xl rounded-2xl shadow-2xl bg-slate-900/90 border border-slate-700 grid grid-cols-1 lg:grid-cols-4 h-[85vh] min-h-0">
 
         {/* Sidebar */}
-        <aside className={`lg:col-span-1 px-4 py-6 border-r border-slate-700/50 bg-slate-900/60 hidden lg:flex flex-col`}>
+        <aside className="lg:col-span-1 px-4 py-6 border-r border-slate-700/50 bg-slate-900/60 hidden lg:flex flex-col">
           <div className="flex items-center gap-3">
             <Bot className="w-6 h-6 text-cyan-400" />
             <h3 className="text-white font-semibold">ARGO Assistant</h3>
@@ -261,13 +261,13 @@ const Chatbot = () => {
             </div>
           </div>
 
-          {/* Messages (scrollable only here) - important: min-h-0 so flex can shrink and overflow works */}
+          {/* Messages */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide min-h-0">
             <div className="max-w-3xl mx-auto space-y-4">
               {messages.map((message) => (
                 <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`flex items-end gap-3 max-w-[95%]`}>
-                    {/* Avatar */}
+                  <div className="flex items-end gap-3 max-w-[95%]">
+                    {/* Bot avatar */}
                     {message.type === 'bot' && (
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-md flex-shrink-0">
                         <Bot className="w-5 h-5 text-white" />
@@ -275,7 +275,13 @@ const Chatbot = () => {
                     )}
 
                     {/* Message bubble */}
-                    <div className={`message-content relative rounded-2xl px-4 py-3 text-sm leading-relaxed max-w-full ${message.type === 'user' ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-2xl' : 'bg-slate-800 text-slate-200 border border-slate-700/40'}`}>
+                    <div
+                      className={`message-content relative rounded-2xl px-4 py-3 text-sm leading-relaxed max-w-full ${
+                        message.type === 'user'
+                          ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-2xl'
+                          : 'bg-slate-800 text-slate-200 border border-slate-700/40'
+                      }`}
+                    >
                       <div className="whitespace-pre-wrap break-words">{message.content}</div>
 
                       {/* component rendering area */}
@@ -293,7 +299,7 @@ const Chatbot = () => {
                       <div className="text-[11px] mt-2 text-slate-400">{formatTime(message.timestamp)}</div>
                     </div>
 
-                    {/* user avatar on right */}
+                    {/* user avatar */}
                     {message.type === 'user' && (
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center shadow-md flex-shrink-0">
                         <User className="w-5 h-5 text-white" />
@@ -325,7 +331,7 @@ const Chatbot = () => {
             </div>
           </div>
 
-          {/* Fixed Input area - always visible (outside scrollable messages) */}
+          {/* Input area */}
           <div className="px-6 py-4 bg-gradient-to-t from-slate-900/80 to-slate-800/50 border-t border-slate-700/50">
             <div className="max-w-4xl mx-auto flex items-center gap-3">
               <div className="relative flex-1">
@@ -344,7 +350,10 @@ const Chatbot = () => {
                   onClick={handleVoiceInput}
                   disabled={isLoading || streamingMessageId !== null}
                   aria-label="Toggle microphone"
-                  className={`absolute right-20 top-1/2 -translate-y-1/2 p-2 rounded-full ${listening ? 'bg-red-500 text-white' : 'bg-slate-700 text-slate-200 hover:bg-slate-600'}`}>
+                  className={`absolute right-20 top-1/2 -translate-y-1/2 p-2 rounded-full ${
+                    listening ? 'bg-red-500 text-white' : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
+                  }`}
+                >
                   <Mic className="w-4 h-4" />
                 </button>
 
@@ -353,34 +362,16 @@ const Chatbot = () => {
                   onClick={() => handleSendMessage()}
                   disabled={isLoading || !inputMessage.trim() || streamingMessageId !== null}
                   aria-label="Send message"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white p-2 rounded-full shadow">
+                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white p-2 rounded-full shadow"
+                >
                   <Send className="w-4 h-4" />
                 </button>
               </div>
-
-              {/* Extra tools */}
-              <div className="flex items-center gap-2">
-                <div className="text-sm text-slate-300 hidden sm:block">Voice: {listening ? <span className="text-emerald-300">On</span> : <span className="text-slate-400">Off</span>}</div>
-              </div>
             </div>
           </div>
+
         </main>
       </div>
-
-      <style>{`
-        /* important: allow flex children to shrink properly */
-        .min-h-0 { min-height: 0; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* constrain media inside message bubbles so they don't overflow */
-        .message-content img, .message-content video, .message-content iframe {
-          max-width: 100%;
-          height: auto;
-          display: block;
-          border-radius: 8px;
-        }
-      `}</style>
     </div>
   );
 };

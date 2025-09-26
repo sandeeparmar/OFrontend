@@ -7,7 +7,7 @@ import Chatbot from './pages/Chatbot';
 import AdminPanel from './pages/AdminPanel';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import OceanTemperatureVisualization from './pages/testingPage.js'
+import OceanTemperatureVisualization from './pages/Visualisation.js'
 import './App.css';
 import ArgoDataAnalyzer from './pages/analyseModel.js'  ;
 import ArgoMonitoringSystem from './pages/alertPage.js' ;
