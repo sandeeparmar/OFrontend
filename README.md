@@ -18,11 +18,6 @@
 
 -> Responsive UI: Tailwind-powered layout with clear information hierarchy and adaptable panels.
 
-#Architecture:
--> Routing: react-router-dom with guarded routes inside AppContent.
-State & context: AuthContext supplies user and loading to conditionally render routes and UI (e.g., Sidebar only when logged in).
-
-->Pages: Dashboard, Chatbot, AdminPanel, Login, Signup, Visualisation (ocean explorer), analyseModel (data analysis), alertPage (monitoring/alerts).
 
 #Tech stack for frontend:
 React (Create React App), react-router-dom, Tailwind CSS, lucide-react icons.
@@ -40,7 +35,6 @@ Faster exploration of location-specific ocean parameters.
 Clear separation of concerns (auth, routing, visualization, analysis).
 A strong foundation for integrating real observational datasets and operational monitoring.
 
-I’ve delivered a concise summary tailored to Ocean_frontend, highlighting protected routes, auth roles, and the Indian Ocean explorer with assistant-style UX.
 
 
 #Summary about complete project  (Ocean Data Intelligence Platform)
