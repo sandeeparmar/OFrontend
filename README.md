@@ -1,6 +1,6 @@
-# Project summary
+#Project summary
 
-# Problem Statment link 
+#Problem Statment link 
 
 -> https://drive.google.com/file/d/1LAraRALqPk1q-vIFlSDzcYI1YrWLaT-6/view?usp=sharing
 
@@ -76,10 +76,10 @@ Precise prompt engineering, query validation, **API** contracts, backend testing
 **20–40% lower** operational/analysis costs
 **60% faster** anomaly detection via **AI** continuous monitoring
 
-# Impact Areas:
-**Disaster preparedness/evacuation**
-**Global climate research/education**
-**Climate tracking** (heat/sea level rise analysis)
-**Marine ecosystem conservation** (pH/O2 monitoring)
-**Affordable forecasting** for agriculture/maritime
-**Industry efficiency** (route/fuel optimization) 
+#Impact Areas:
+Disaster preparedness/evacuation
+Global climate research/education
+Climate tracking (heat/sea level rise analysis)
+Marine ecosystem conservation (pH/O2 monitoring)
+Affordable forecasting for agriculture/maritime
+Industry efficiency (route/fuel optimization) 
