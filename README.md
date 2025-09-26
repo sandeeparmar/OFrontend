@@ -1,5 +1,10 @@
 #Project summary
 
+#Problem Statment link 
+
+-> https://drive.google.com/file/d/1LAraRALqPk1q-vIFlSDzcYI1YrWLaT-6/view?usp=sharing
+
+#Our Solution 
 1. Ocean_frontend : is a modern React application for exploring Indian Ocean data with secure, role-aware access and rich, interactive visualization. The app provides authenticated dashboards, an ocean data explorer with a clickable map, and dedicated pages for analysis and alerts—aimed at turning oceanographic parameters into actionable insights.
 
 2. Core purpose: Enable users to query, visualize, and interpret ocean parameters (temperature, salinity, depth, pressure, BGC metrics) across the Indian Ocean region.
